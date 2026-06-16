@@ -140,6 +140,66 @@ export type PackagerPlacementPreference = {
     acceptsFrame?: boolean | null;
 };
 
+export type PackagerHitTestInput = {
+    pageIndex: number;
+    pagePoint: { x: number; y: number };
+    boxPoint: { x: number; y: number };
+    box: LayoutBox;
+};
+
+export type PackagerTableCellHitContext = {
+    sourceId: string;
+    rowIndex?: number;
+    viewportRowIndex?: number;
+    colIndex?: number;
+    colStart?: number;
+    colSpan?: number;
+    rowSpan?: number;
+    repeatedHeaderClone?: boolean;
+    worldRowOffset?: number;
+    viewportWorldY?: number;
+    viewportHeight?: number;
+};
+
+export type PackagerListHitContext = {
+    sourceId: string;
+    itemIndex?: number;
+    ordinal?: number;
+    kind?: string;
+    marker?: boolean;
+    generatedMarker?: boolean;
+};
+
+export type PackagerTextHit = {
+    kind: 'text';
+    actorId: string;
+    sourceId: string;
+    lineIndex: number;
+    segmentIndex: number;
+    text: string;
+    sourceStart?: number;
+    sourceEnd?: number;
+    sourceOffset?: number;
+    character?: string;
+    characterIndex?: number;
+    segmentDirection?: 'ltr' | 'rtl';
+    segmentIsShaped?: boolean;
+    tableCell?: PackagerTableCellHitContext;
+    list?: PackagerListHitContext;
+    reason?: string;
+};
+
+export type PackagerBoxHit = {
+    kind: 'box';
+    actorId: string;
+    sourceId: string;
+    tableCell?: PackagerTableCellHitContext;
+    list?: PackagerListHitContext;
+    reason?: string;
+};
+
+export type PackagerHitTestResult = PackagerTextHit | PackagerBoxHit;
+
 /** @deprecated Use PackagerReshapeResult */
 export type PackagerSplitResult = PackagerReshapeResult;
 /** @deprecated Use PackagerReshapeKind */
@@ -199,6 +259,13 @@ export interface PackagerUnit {
      * Must be deterministic for the same availableWidth/context; avoid height-dependent layout.
      */
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] | null;
+
+    /**
+     * Optional actor-owned hit-testing hook. The caller supplies a published box
+     * plus a point in that box's local coordinates; actors that understand their
+     * own internals can answer without app-side layout reconstruction.
+     */
+    hitTestPoint?(input: PackagerHitTestInput): PackagerHitTestResult | null | undefined;
 
     /**
      * Allows stateful observers to reevaluate committed bulletin-board state at

@@ -1,16 +1,21 @@
 import { Box } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox, type FlowMaterializationContext } from '../layout-core-types';
+import { LayoutUtils } from '../layout-utils';
 import { materializeSpatialGridFlowBox, splitSpatialGridFlowBox, type SpatialGridLayoutContext } from '../layout-table';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import {
     PackagerContext,
+    PackagerHitTestInput,
+    PackagerHitTestResult,
     PackagerPlacementPreference,
     PackagerReshapeResult,
     PackagerReshapeProfile,
+    PackagerTableCellHitContext,
     PackagerUnit,
     resolvePackagerChunkOriginWorldY
 } from './packager-types';
+import { hitTestRichTextBox } from './text-hit-testing';
 
 type SpatialGridPackagerProcessor = {
     createFlowMaterializationContext(pageIndex: number, cursorY: number, availableWidth: number, worldY?: number): FlowMaterializationContext;
@@ -31,6 +36,36 @@ type SpatialGridPackagerProcessor = {
         };
     };
 };
+
+function finiteNumber(value: unknown): number | undefined {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : undefined;
+}
+
+function finiteInteger(value: unknown): number | undefined {
+    const number = finiteNumber(value);
+    return number === undefined ? undefined : Math.floor(number);
+}
+
+function resolveTableCellHitContext(box: Box): PackagerTableCellHitContext | null {
+    const properties = box.properties || {};
+    if (box.type !== 'table_cell' && properties._tableCell !== true) return null;
+    const sourceId = String(box.meta?.sourceId || '').trim();
+    if (!sourceId) return null;
+    return {
+        sourceId,
+        rowIndex: finiteInteger(properties._tableRowIndex),
+        viewportRowIndex: finiteInteger(properties._tableViewportRowIndex),
+        colIndex: finiteInteger(properties._tableColIndex),
+        colStart: finiteInteger(properties._tableColStart),
+        colSpan: finiteInteger(properties._tableColSpan),
+        rowSpan: finiteInteger(properties._tableRowSpan),
+        repeatedHeaderClone: properties._tableIsRepeatedHeaderClone === true,
+        worldRowOffset: finiteNumber(properties._tableWorldRowOffset),
+        viewportWorldY: finiteNumber(properties._tableViewportWorldY),
+        viewportHeight: finiteNumber(properties._tableViewportHeight)
+    };
+}
 
 /**
  * Dedicated packager for normalized SpatialGrid / table flow boxes.
@@ -181,6 +216,10 @@ export class SpatialGridPackager implements PackagerUnit {
                     ...(box.properties || {}),
                     ...(chunkOriginWorldY !== null ? { _tableViewportWorldY: chunkOriginWorldY } : {}),
                     _tableViewportHeight: viewportHeight
+                },
+                meta: {
+                    ...(box.meta || {}),
+                    actorId: this.actorId
                 }
             };
         });
@@ -198,6 +237,33 @@ export class SpatialGridPackager implements PackagerUnit {
         if (!this.flowBox.lines || this.flowBox.lines.length <= 1) return true;
         if (this.flowBox.overflowPolicy === 'move-whole') return true;
         return false;
+    }
+
+    hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
+        const tableCell = resolveTableCellHitContext(input.box);
+        if (!tableCell) {
+            return { kind: 'box', actorId: this.actorId, sourceId: this.sourceId, reason: 'not-table-cell' };
+        }
+
+        const textHit = hitTestRichTextBox(
+            input,
+            {
+                actorId: this.actorId,
+                sourceId: tableCell.sourceId
+            },
+            { layout: (this.processor as any).config?.layout }
+        );
+        if (textHit) {
+            return { ...textHit, tableCell };
+        }
+
+        return {
+            kind: 'box',
+            actorId: this.actorId,
+            sourceId: tableCell.sourceId,
+            tableCell,
+            reason: 'table-cell'
+        };
     }
 
     getLeadingSpacing(): number {

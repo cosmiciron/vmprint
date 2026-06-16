@@ -1,4 +1,4 @@
-import { Element, LayoutConfig, type LayoutScriptingConfig } from './types';
+import { Element, LayoutConfig, type Box, type LayoutScriptingConfig } from './types';
 import { LayoutProcessor, type LayoutSimulationOptions } from './layout/layout-core';
 import { LayoutUtils } from './layout/layout-utils';
 import {
@@ -48,7 +48,11 @@ import {
     PrintPipelineSnapshot
 } from './layout/simulation-report';
 import { EngineRuntime } from './runtime';
-import { normalizeObservationResult } from './layout/packagers/packager-types';
+import {
+    normalizeObservationResult,
+    type PackagerHitTestResult,
+    type PackagerUnit
+} from './layout/packagers/packager-types';
 import {
     buildRuntimeIntentTopic,
     cloneRuntimeElementSourceSnapshot,
@@ -249,6 +253,23 @@ type RuntimeReplayState = {
     source: string;
 };
 
+export type WorldSimulationHitTestRequest = {
+    pageIndex?: number;
+    x?: number;
+    y?: number;
+};
+
+export type WorldSimulationHitTestResult = {
+    kind: 'page-missing' | 'page' | 'box';
+    pageIndex: number;
+    point: { x: number; y: number };
+    box: Box | null;
+    actorId?: string;
+    sourceId?: string;
+    packagerHit?: PackagerHitTestResult | null;
+    reason?: string;
+};
+
 class WorldSimulation {
     private pages: ReturnType<LayoutProcessor['simulate']> = [];
     private lastInitialLayoutResult: InitialLayoutResult | null = null;
@@ -286,6 +307,63 @@ class WorldSimulation {
 
     getPages(): ReturnType<LayoutProcessor['simulate']> {
         return this.pages;
+    }
+
+    hitTestPoint(request: WorldSimulationHitTestRequest = {}): WorldSimulationHitTestResult {
+        const pageIndex = Math.max(0, Math.floor(Number(request.pageIndex || 0)));
+        const point = {
+            x: Number.isFinite(Number(request.x)) ? Number(request.x) : 0,
+            y: Number.isFinite(Number(request.y)) ? Number(request.y) : 0
+        };
+        const page = this.pages[pageIndex] as { boxes?: Box[] } | undefined;
+        if (!page) {
+            return { kind: 'page-missing', pageIndex, point, box: null };
+        }
+
+        const boxes = Array.isArray(page.boxes) ? page.boxes : [];
+        for (let index = boxes.length - 1; index >= 0; index -= 1) {
+            const box = boxes[index];
+            const x = Number(box?.x || 0);
+            const y = Number(box?.y || 0);
+            const w = Math.max(0, Number(box?.w || 0));
+            const h = Math.max(0, Number(box?.h || 0));
+            if (w <= 0 || h <= 0) continue;
+            if (point.x < x || point.x > x + w || point.y < y || point.y > y + h) continue;
+
+            const actorId = String(box?.meta?.actorId || '');
+            const sourceId = String(box?.meta?.sourceId || '');
+            const hostActorId = String(box?.meta?.hostActorId || '');
+            const directActor = this.findActorById(actorId);
+            const hostActor = this.findActorById(hostActorId);
+            const hitInput = {
+                pageIndex,
+                pagePoint: point,
+                boxPoint: { x: point.x - x, y: point.y - y },
+                box
+            };
+            const packagerHit = hostActor?.hitTestPoint?.(hitInput)
+                ?? directActor?.hitTestPoint?.(hitInput)
+                ?? null;
+            return {
+                kind: 'box',
+                pageIndex,
+                point,
+                box,
+                actorId: actorId || undefined,
+                sourceId: sourceId || undefined,
+                packagerHit,
+                reason: (hostActor || directActor) && !packagerHit ? 'actor-did-not-answer' : undefined
+            };
+        }
+
+        return { kind: 'page', pageIndex, point, box: null };
+    }
+
+    private findActorById(actorId: string): PackagerUnit | null {
+        if (!actorId) return null;
+        const session = this.engine.getCurrentLayoutSession?.();
+        const actors = session?.getRegisteredActors?.() ?? [];
+        return actors.find((actor) => actor.actorId === actorId) ?? null;
     }
 
     getPageCount(): number {

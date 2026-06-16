@@ -57,10 +57,13 @@ import { buildPackagerForElement } from './create-packagers';
 import { FlowBoxPackager } from './flow-box-packager';
 import { createContinuationIdentity, createElementPackagerIdentity, PackagerIdentity } from './packager-identity';
 import { resolveSpatialFieldOverflow, SpatialFieldGeometryCapability } from './spatial-field-capability';
+import { hitTestRichTextBox } from './text-hit-testing';
 import {
     bindPackagerSignalPublisher,
     LayoutBox,
     PackagerContext,
+    PackagerHitTestInput,
+    PackagerHitTestResult,
     PackagerPlacementPreference,
     PackagerReshapeResult,
     PackagerReshapeProfile,
@@ -409,7 +412,48 @@ export class StoryPackager implements PackagerUnit {
 
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): LayoutBox[] {
         this.prepare(availableWidth, availableHeight, context);
-        return cloneBoxes(this.lastResult?.allBoxes || [], context.pageIndex);
+        return cloneBoxes(this.lastResult?.allBoxes || [], context.pageIndex).map((box) => {
+            const childMeta = box.meta || {};
+            return {
+                ...box,
+                meta: {
+                    ...childMeta,
+                    hostActorId: this.actorId,
+                    hostSourceId: this.sourceId,
+                    hostSourceType: this.actorKind,
+                    hostedActorId: childMeta.hostedActorId || childMeta.actorId,
+                    hostedSourceId: childMeta.hostedSourceId || childMeta.sourceId,
+                    hostedSourceType: childMeta.hostedSourceType || childMeta.sourceType
+                }
+            };
+        });
+    }
+
+    hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
+        const childSourceId = String(input.box?.meta?.sourceId || '');
+        const textHit = hitTestRichTextBox(
+            input,
+            {
+                actorId: String(input.box?.meta?.hostedActorId || input.box?.meta?.actorId || this.actorId),
+                sourceId: childSourceId || this.sourceId
+            },
+            { layout: (this.processor as any).config?.layout }
+        );
+        if (textHit?.kind === 'text') {
+            return textHit;
+        }
+
+        const childActorId = String(input.box?.meta?.hostedActorId || input.box?.meta?.actorId || '');
+        if (!childActorId || childActorId === this.actorId) {
+            return textHit ?? { kind: 'box', actorId: this.actorId, sourceId: this.sourceId, reason: 'story-container' };
+        }
+        const entry = this.storyActorEntries.find((candidate) => candidate.actor.actorId === childActorId);
+        if (!entry) {
+            return textHit ?? { kind: 'box', actorId: this.actorId, sourceId: this.sourceId, reason: 'story-child-actor-missing' };
+        }
+        return entry.actor.hitTestPoint?.(input)
+            ?? textHit
+            ?? { kind: 'box', actorId: entry.actor.actorId, sourceId: entry.actor.sourceId, reason: 'story-child-did-not-answer' };
     }
 
     getRequiredHeight(): number {

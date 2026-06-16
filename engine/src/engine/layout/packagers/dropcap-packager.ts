@@ -18,12 +18,15 @@ import { createContinuationIdentity, createElementPackagerIdentity, PackagerIden
 import {
     LayoutBox,
     PackagerContext,
+    PackagerHitTestInput,
+    PackagerHitTestResult,
     PackagerPlacementPreference,
     PackagerReshapeResult,
     PackagerReshapeProfile,
     PackagerUnit,
     ObservationResult
 } from './packager-types';
+import { hitTestRichTextBox } from './text-hit-testing';
 import type { TextDelegate } from '../../../contracts';
 
 type DropCapParts = {
@@ -166,6 +169,12 @@ class DropCapFragmentPackager implements PackagerUnit {
 
     reshape(_availableHeight: number, _context: PackagerContext): PackagerReshapeResult {
         return { currentFragment: null, continuationFragment: this };
+    }
+
+    hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
+        return hitTestRichTextBox(input, this, {
+            layout: (this.processor as any).config?.layout
+        });
     }
 
     getRequiredHeight(): number {
@@ -751,6 +760,12 @@ export class DropCapPackager implements PackagerUnit {
             createContinuationIdentity(this, partB.meta?.fragmentIndex)
         );
         return { currentFragment: fitsCurrent, continuationFragment: pushedNext };
+    }
+
+    hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
+        return hitTestRichTextBox(input, this, {
+            layout: (this.processor as any).config?.layout
+        });
     }
 
     getRequiredHeight(): number {

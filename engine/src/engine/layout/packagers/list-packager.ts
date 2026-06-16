@@ -21,11 +21,15 @@ import { SpatialFieldGeometryCapability } from './spatial-field-capability';
 import type {
     LayoutBox,
     PackagerContext,
+    PackagerHitTestInput,
+    PackagerHitTestResult,
+    PackagerListHitContext,
     PackagerPlacementPreference,
     PackagerReshapeProfile,
     PackagerReshapeResult,
     PackagerUnit
 } from './packager-types';
+import { hitTestRichTextBox } from './text-hit-testing';
 
 type ElementShaper = {
     normalizeFlowBlock(element: Element, options: { path: number[] }): any;
@@ -48,6 +52,12 @@ type ContainedHostFrame = {
     w: number;
     h: number;
     clipProperties: Record<string, unknown>;
+};
+
+type ListHitOwner = {
+    actorId: string;
+    sourceId: string;
+    layout?: unknown;
 };
 
 const BLOCK_CHILD_TYPES = new Set([
@@ -321,6 +331,66 @@ function alignMarkerBoxesToBodyBaseline(markerBoxes: Box[], bodyBoxes: Box[]): B
     }));
 }
 
+function finiteInteger(value: unknown): number | undefined {
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.floor(number) : undefined;
+}
+
+function resolveListHitContext(box: Box): PackagerListHitContext | null {
+    const properties = box.properties || {};
+    const isMarker = properties._listMarker === true;
+    const itemIndex = finiteInteger(properties._listItemIndex);
+    const ordinal = finiteInteger(properties._listItemOrdinal);
+    const kind = typeof properties._listKind === 'string' ? properties._listKind : undefined;
+    if (!isMarker && itemIndex === undefined && ordinal === undefined && !kind) return null;
+    const sourceId = String(box.meta?.sourceId || '').trim();
+    if (!sourceId) return null;
+    return {
+        sourceId,
+        itemIndex,
+        ordinal,
+        kind,
+        marker: isMarker || undefined,
+        generatedMarker: isMarker || undefined
+    };
+}
+
+function hitTestListBox(input: PackagerHitTestInput, owner: ListHitOwner): PackagerHitTestResult | null {
+    const list = resolveListHitContext(input.box);
+    if (!list) {
+        return { kind: 'box', actorId: owner.actorId, sourceId: owner.sourceId, reason: 'not-list-item' };
+    }
+    const textHit = hitTestRichTextBox(
+        input,
+        {
+            actorId: owner.actorId,
+            sourceId: list.sourceId
+        },
+        { layout: owner.layout as any }
+    );
+    if (textHit) {
+        return { ...textHit, list };
+    }
+    return {
+        kind: 'box',
+        actorId: owner.actorId,
+        sourceId: list.sourceId,
+        list,
+        reason: list.marker ? 'list-marker' : 'list-item'
+    };
+}
+
+function routeMarkerBoxesToListActor(boxes: Box[], owner: Pick<PackagerUnit, 'actorId'>): Box[] {
+    return boxes.map((box) => ({
+        ...box,
+        properties: { ...(box.properties || {}) },
+        meta: {
+            ...(box.meta || {}),
+            actorId: owner.actorId
+        }
+    }));
+}
+
 function cloneListWithItems(
     source: Element,
     items: Element[],
@@ -353,7 +423,8 @@ class FrozenListPackager implements PackagerUnit {
     constructor(
         private readonly frozenBoxes: Box[],
         private readonly frozenHeight: number,
-        identity: PackagerIdentity
+        identity: PackagerIdentity,
+        private readonly layout?: unknown
     ) {
         this.actorId = identity.actorId;
         this.sourceId = identity.sourceId;
@@ -388,6 +459,10 @@ class FrozenListPackager implements PackagerUnit {
 
     reshape(_availableHeight: number, _context: PackagerContext): PackagerReshapeResult {
         return { currentFragment: null, continuationFragment: this };
+    }
+
+    hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
+        return hitTestListBox(input, this);
     }
 
     getRequiredHeight(): number {
@@ -1104,6 +1179,14 @@ export class ListPackager implements PackagerUnit {
         };
     }
 
+    hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
+        return hitTestListBox(input, {
+            actorId: this.actorId,
+            sourceId: this.sourceId,
+            layout: (this.processor as any).config?.layout
+        });
+    }
+
     getHostedRuntimeActors(): readonly PackagerUnit[] {
         return Array.from(this.hostedBodyActorsByItem.values()).flat().map((entry) => entry.actor);
     }
@@ -1170,7 +1253,8 @@ export class ListPackager implements PackagerUnit {
             const markerBoxes = item.markerBoxes ?? item.marker?.emitBoxes(availableWidth, availableHeight, context) ?? [];
             const bodyBoxes = item.body.boxes;
             const alignedMarkerBoxes = item.markerBoxes ? markerBoxes : alignMarkerBoxesToBodyBaseline(markerBoxes, bodyBoxes);
-            for (const box of [...alignedMarkerBoxes, ...bodyBoxes]) {
+            const routedMarkerBoxes = routeMarkerBoxesToListActor(alignedMarkerBoxes, this);
+            for (const box of [...routedMarkerBoxes, ...bodyBoxes]) {
                 boxes.push({
                     ...box,
                     y: Number(box.y || 0) + item.y
@@ -1227,7 +1311,8 @@ export class ListPackager implements PackagerUnit {
             const markerBoxes = item.markerBoxes ?? item.marker?.emitBoxes(availableWidth, availableHeight, context) ?? [];
             const bodyBoxes = item.body.boxes;
             const alignedMarkerBoxes = item.markerBoxes ? markerBoxes : alignMarkerBoxesToBodyBaseline(markerBoxes, bodyBoxes);
-            for (const box of [...alignedMarkerBoxes, ...bodyBoxes]) {
+            const routedMarkerBoxes = routeMarkerBoxesToListActor(alignedMarkerBoxes, this);
+            for (const box of [...routedMarkerBoxes, ...bodyBoxes]) {
                 boxes.push({
                     ...box,
                     y: Number(box.y || 0) + item.y
@@ -1287,7 +1372,8 @@ export class ListPackager implements PackagerUnit {
         const markerBoxes = marker?.emitBoxes(availableWidth, remainingHeight, context) || [];
         const previousBoxes = this.collectPreparedBoxesThrough(itemIndex, availableWidth, availableHeight, context);
         const alignedMarkerBoxes = alignMarkerBoxesToBodyBaseline(markerBoxes, leadingBody.boxes);
-        const itemBoxes = [...alignedMarkerBoxes, ...leadingBody.boxes].map((box) => ({
+        const routedMarkerBoxes = routeMarkerBoxesToListActor(alignedMarkerBoxes, this);
+        const itemBoxes = [...routedMarkerBoxes, ...leadingBody.boxes].map((box) => ({
             ...box,
             y: Number(box.y || 0) + consumedBeforeItem
         }));
@@ -1313,7 +1399,8 @@ export class ListPackager implements PackagerUnit {
                     fragmentIndex: this.fragmentIndex,
                     continuationOf: this.continuationOf,
                     path: this.identityPath
-                }
+                },
+                (this.processor as any).config?.layout
             ),
             continuationFragment: new ListPackager(
                 continuationElement,
@@ -1486,9 +1573,9 @@ export class ListPackager implements PackagerUnit {
                     : partialLeadBox;
                 const currentBoxes = [
                     emittedPartialLeadBox,
-                    ...(containedHostFrame
+                    ...routeMarkerBoxesToListActor((containedHostFrame
                         ? markerBoxes
-                        : alignMarkerBoxesToBodyBaseline(markerBoxes, [emittedPartialLeadBox]))
+                        : alignMarkerBoxesToBodyBaseline(markerBoxes, [emittedPartialLeadBox])), this)
                 ].map((box) => ({
                     ...box,
                     y: Number(box.y || 0) + consumedBeforeItem
@@ -1528,7 +1615,8 @@ export class ListPackager implements PackagerUnit {
                             fragmentIndex: this.fragmentIndex,
                             continuationOf: this.continuationOf,
                             path: this.identityPath
-                        }
+                        },
+                        (this.processor as any).config?.layout
                     ),
                     continuationFragment: new ListPackager(
                         continuationElement,
@@ -1604,7 +1692,8 @@ export class ListPackager implements PackagerUnit {
                             fragmentIndex: this.fragmentIndex,
                             continuationOf: this.continuationOf,
                             path: this.identityPath
-                        }
+                        },
+                        (this.processor as any).config?.layout
                     ),
                     continuationFragment: new ListPackager(
                         continuationElement,
@@ -1655,7 +1744,8 @@ export class ListPackager implements PackagerUnit {
                         fragmentIndex: this.fragmentIndex,
                         continuationOf: this.continuationOf,
                         path: this.identityPath
-                    }
+                    },
+                    (this.processor as any).config?.layout
                 ),
                 continuationFragment: new ListPackager(
                     continuationElement,

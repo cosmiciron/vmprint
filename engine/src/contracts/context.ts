@@ -67,6 +67,8 @@ export interface ContextShapedGlyph {
 
 export interface ContextFontRegistrationOptions {
     standardFontPostScriptName?: string;
+    fontWeight?: number;
+    fontStyle?: 'normal' | 'italic';
 }
 
 export interface ContextTextOptions {

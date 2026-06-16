@@ -736,6 +736,12 @@ export interface BoxMeta {
     fragmentIndex: number;
     isContinuation: boolean;
     pageIndex?: number;
+    hostActorId?: string;
+    hostSourceId?: string;
+    hostSourceType?: string;
+    hostedActorId?: string;
+    hostedSourceId?: string;
+    hostedSourceType?: string;
     generated?: boolean;
     originSourceId?: string;
     transformKind?: 'clone' | 'split' | 'morph';

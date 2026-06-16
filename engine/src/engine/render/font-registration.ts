@@ -171,7 +171,11 @@ export const registerRendererFonts = async ({
                 await context.registerFont(
                     uniqueId,
                     new Uint8Array(buffer),
-                    standardMetadata ? { standardFontPostScriptName: standardMetadata.postscriptName } : undefined
+                    standardMetadata ? {
+                        standardFontPostScriptName: standardMetadata.postscriptName,
+                        fontWeight: standardMetadata.weight,
+                        fontStyle: standardMetadata.style
+                    } : undefined
                 );
                 cachedRegistrations.add(registrationKey);
                 registeredIds.add(uniqueId);

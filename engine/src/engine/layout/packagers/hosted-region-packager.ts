@@ -3,6 +3,8 @@ import { LayoutProcessor } from '../layout-core';
 import type { NormalizedIndependentZoneStrip } from '../normalized-zone-strip';
 import {
     PackagerContext,
+    PackagerHitTestInput,
+    PackagerHitTestResult,
     PackagerPlacementPreference,
     PackagerReshapeResult,
     PackagerReshapeProfile,
@@ -27,6 +29,7 @@ import {
     type HostedRegionActorQueue,
     type HostedRegionDescriptor
 } from './region-actor-queues';
+import { hitTestRichTextBox } from './text-hit-testing';
 
 type HostedRegionHostLayout = Pick<
     NormalizedIndependentZoneStrip,
@@ -47,6 +50,22 @@ function annotateHostedActorBoxes(actor: PackagerUnit, boxes: Box[]): Box[] {
                 isContinuation: actor.fragmentIndex > 0 || !!actor.continuationOf
             }
     }));
+}
+
+function annotateHostedRegionHostBox(host: PackagerUnit, box: Box): Box {
+    const childMeta = box.meta || {};
+    return {
+        ...box,
+        meta: {
+            ...childMeta,
+            hostActorId: host.actorId,
+            hostSourceId: host.sourceId,
+            hostSourceType: host.actorKind,
+            hostedActorId: childMeta.hostedActorId || childMeta.actorId,
+            hostedSourceId: childMeta.hostedSourceId || childMeta.sourceId,
+            hostedSourceType: childMeta.hostedSourceType || childMeta.sourceType
+        }
+    };
 }
 
 function resolveMaterializationTick(context: PackagerContext): number {
@@ -119,7 +138,7 @@ class FrozenHostedRegionPackager implements PackagerUnit {
         const mt = this.marginTopVal;
         return this.frozenBoxes.map((box) => {
             const tag = readHostedRegionDebugTag(box);
-            return {
+            return annotateHostedRegionHostBox(this, {
                 ...box,
                 x: (box.x || 0) + leftMargin,
                 y: (box.y || 0) + mt,
@@ -144,7 +163,7 @@ class FrozenHostedRegionPackager implements PackagerUnit {
                     }
                     : { ...(box.properties || {}) },
                 meta: box.meta ? { ...box.meta } : box.meta
-            };
+            });
         });
     }
 
@@ -346,6 +365,16 @@ export class HostedRegionPackager implements PackagerUnit {
         for (const zone of this.regionQueues) {
             const actorIndex = zone.actors.findIndex((entry) => entry.actor.actorId === targetActor.actorId);
             if (actorIndex >= 0) return { zone, actorIndex };
+        }
+        return null;
+    }
+
+    private findHostedActorById(actorId: string): PackagerUnit | null {
+        if (!actorId || !this.regionQueues) return null;
+        for (const zone of this.regionQueues) {
+            for (const entry of zone.actors) {
+                if (entry.actor.actorId === actorId) return entry.actor;
+            }
         }
         return null;
     }
@@ -575,7 +604,7 @@ export class HostedRegionPackager implements PackagerUnit {
         const boxes = this.getEmittableBoxes();
         return boxes.map((b) => {
             const tag = readHostedRegionDebugTag(b);
-            return {
+            return annotateHostedRegionHostBox(this, {
                 ...b,
                 x: (b.x || 0) + leftMargin,
                 y: (b.y || 0) + mt,
@@ -599,8 +628,35 @@ export class HostedRegionPackager implements PackagerUnit {
                         }
                     }
                     : b.properties
-            };
+            });
         });
+    }
+
+    hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
+        const childSourceId = String(input.box?.meta?.sourceId || '');
+        const textHit = hitTestRichTextBox(
+            input,
+            {
+                actorId: String(input.box?.meta?.hostedActorId || input.box?.meta?.actorId || this.actorId),
+                sourceId: childSourceId || this.sourceId
+            },
+            { layout: (this.processor as any).config?.layout }
+        );
+        if (textHit?.kind === 'text') {
+            return textHit;
+        }
+
+        const childActorId = String(input.box?.meta?.hostedActorId || input.box?.meta?.actorId || '');
+        if (!childActorId || childActorId === this.actorId) {
+            return textHit ?? { kind: 'box', actorId: this.actorId, sourceId: this.sourceId, reason: 'hosted-region-container' };
+        }
+        const actor = this.findHostedActorById(childActorId);
+        if (!actor) {
+            return textHit ?? { kind: 'box', actorId: this.actorId, sourceId: this.sourceId, reason: 'hosted-region-child-actor-missing' };
+        }
+        return actor.hitTestPoint?.(input)
+            ?? textHit
+            ?? { kind: 'box', actorId: actor.actorId, sourceId: actor.sourceId, reason: 'hosted-region-child-did-not-answer' };
     }
 
     getDebugRegions(): DebugRegion[] {

@@ -13,12 +13,15 @@ import { SpatialMap } from './spatial-map';
 import {
     ObservationResult,
     PackagerContext,
+    PackagerHitTestInput,
+    PackagerHitTestResult,
     PackagerPlacementPreference,
     PackagerReshapeResult,
     PackagerReshapeProfile,
     PackagerUnit,
     resolvePackagerChunkOriginWorldY
 } from './packager-types';
+import { hitTestRichTextBox } from './text-hit-testing';
 
 type FlowBoxProcessor = {
     normalizeFlowBlock(element: any, options: { path: number[] }): any;
@@ -231,6 +234,12 @@ export class FlowBoxPackager implements PackagerUnit {
         this.cachedBoxes = boxes;
 
         return boxes;
+    }
+
+    hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
+        return hitTestRichTextBox(input, this, {
+            layout: (this.processor as any).config?.layout
+        });
     }
 
     getRequiredHeight(): number {
