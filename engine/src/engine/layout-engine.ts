@@ -50,7 +50,9 @@ import {
 import { EngineRuntime } from './runtime';
 import {
     normalizeObservationResult,
+    type PackagerCaretResult,
     type PackagerHitTestResult,
+    type PackagerSpatialCaretDirection,
     type PackagerUnit
 } from './layout/packagers/packager-types';
 import {
@@ -282,6 +284,44 @@ export type WorldSimulationHitTestResult = {
     reason?: string;
 };
 
+export type WorldSimulationCaretRequest = WorldSimulationHitTestRequest;
+
+export type WorldSimulationCaretResult = {
+    kind: 'page-missing' | 'page' | 'caret';
+    pageIndex: number;
+    point: { x: number; y: number };
+    box: WorldSimulationHitBox | null;
+    caret?: PackagerCaretResult | null;
+    actorId?: string;
+    sourceId?: string;
+    reason?: string;
+};
+
+export type WorldSimulationSpatialCaretMoveRequest = {
+    pageIndex?: number;
+    caret?: PackagerCaretResult | null;
+    direction?: PackagerSpatialCaretDirection;
+};
+
+export type WorldSimulationSpatialCaretMoveResult = WorldSimulationCaretResult;
+
+type WorldSimulationPointTarget = {
+    pageIndex: number;
+    point: { x: number; y: number };
+    box: Box;
+    hitBox: WorldSimulationHitBox;
+    actorId: string;
+    sourceId: string;
+    directActor: PackagerUnit | null;
+    hostActor: PackagerUnit | null;
+    input: {
+        pageIndex: number;
+        pagePoint: { x: number; y: number };
+        boxPoint: { x: number; y: number };
+        box: Box;
+    };
+};
+
 function buildWorldSimulationHitBox(box: Box, rect: WorldSimulationHitBox['rect']): WorldSimulationHitBox {
     return {
         rect,
@@ -337,15 +377,28 @@ class WorldSimulation {
         return this.pages;
     }
 
-    hitTestPoint(request: WorldSimulationHitTestRequest = {}): WorldSimulationHitTestResult {
+    private normalizePointRequest(request: WorldSimulationHitTestRequest = {}): {
+        pageIndex: number;
+        point: { x: number; y: number };
+    } {
         const pageIndex = Math.max(0, Math.floor(Number(request.pageIndex || 0)));
         const point = {
             x: Number.isFinite(Number(request.x)) ? Number(request.x) : 0,
             y: Number.isFinite(Number(request.y)) ? Number(request.y) : 0
         };
+        return { pageIndex, point };
+    }
+
+    private resolvePointTarget(request: WorldSimulationHitTestRequest = {}): {
+        pageIndex: number;
+        point: { x: number; y: number };
+        target: WorldSimulationPointTarget | null;
+        pageMissing: boolean;
+    } {
+        const { pageIndex, point } = this.normalizePointRequest(request);
         const page = this.pages[pageIndex] as { boxes?: Box[] } | undefined;
         if (!page) {
-            return { kind: 'page-missing', pageIndex, point, box: null };
+            return { pageIndex, point, target: null, pageMissing: true };
         }
 
         const boxes = Array.isArray(page.boxes) ? page.boxes : [];
@@ -365,28 +418,134 @@ class WorldSimulation {
             const hostActorId = String(box?.meta?.hostActorId || '');
             const directActor = this.findActorById(actorId);
             const hostActor = this.findActorById(hostActorId);
-            const hitInput = {
+            const input = {
                 pageIndex,
                 pagePoint: point,
                 boxPoint: { x: point.x - rect.x, y: point.y - rect.y },
                 box
             };
-            const packagerHit = hostActor?.hitTestPoint?.(hitInput)
-                ?? directActor?.hitTestPoint?.(hitInput)
-                ?? null;
             return {
-                kind: 'box',
                 pageIndex,
                 point,
-                box: buildWorldSimulationHitBox(box, rect),
-                actorId: actorId || undefined,
-                sourceId: sourceId || undefined,
-                packagerHit,
-                reason: (hostActor || directActor) && !packagerHit ? 'actor-did-not-answer' : undefined
+                target: {
+                    pageIndex,
+                    point,
+                    box,
+                    hitBox: buildWorldSimulationHitBox(box, rect),
+                    actorId,
+                    sourceId,
+                    directActor,
+                    hostActor,
+                    input
+                },
+                pageMissing: false
             };
         }
 
-        return { kind: 'page', pageIndex, point, box: null };
+        return { pageIndex, point, target: null, pageMissing: false };
+    }
+
+    hitTestPoint(request: WorldSimulationHitTestRequest = {}): WorldSimulationHitTestResult {
+        const resolved = this.resolvePointTarget(request);
+        const { pageIndex, point, target } = resolved;
+        if (resolved.pageMissing) {
+            return { kind: 'page-missing', pageIndex, point, box: null };
+        }
+        if (!target) {
+            return { kind: 'page', pageIndex, point, box: null };
+        }
+
+        const packagerHit = target.hostActor?.hitTestPoint?.(target.input)
+            ?? target.directActor?.hitTestPoint?.(target.input)
+            ?? null;
+        return {
+            kind: 'box',
+            pageIndex,
+            point,
+            box: target.hitBox,
+            actorId: target.actorId || undefined,
+            sourceId: target.sourceId || undefined,
+            packagerHit,
+            reason: (target.hostActor || target.directActor) && !packagerHit ? 'actor-did-not-answer' : undefined
+        };
+    }
+
+    resolveCaretAtPoint(request: WorldSimulationCaretRequest = {}): WorldSimulationCaretResult {
+        const resolved = this.resolvePointTarget(request);
+        const { pageIndex, point, target } = resolved;
+        if (resolved.pageMissing) {
+            return { kind: 'page-missing', pageIndex, point, box: null };
+        }
+        if (!target) {
+            return { kind: 'page', pageIndex, point, box: null };
+        }
+
+        const caret = target.hostActor?.resolveCaretAtPoint?.(target.input)
+            ?? target.directActor?.resolveCaretAtPoint?.(target.input)
+            ?? null;
+        if (!caret) {
+            return {
+                kind: 'page',
+                pageIndex,
+                point,
+                box: target.hitBox,
+                actorId: target.actorId || undefined,
+                sourceId: target.sourceId || undefined,
+                reason: (target.hostActor || target.directActor) ? 'actor-did-not-answer' : 'actor-missing'
+            };
+        }
+        return {
+            kind: 'caret',
+            pageIndex,
+            point,
+            box: target.hitBox,
+            caret,
+            actorId: target.actorId || undefined,
+            sourceId: target.sourceId || undefined
+        };
+    }
+
+    resolveSpatialCaretMove(request: WorldSimulationSpatialCaretMoveRequest = {}): WorldSimulationSpatialCaretMoveResult {
+        const pageIndex = Math.max(0, Math.floor(Number(request.pageIndex || 0)));
+        const caret = request.caret || null;
+        const direction = request.direction || 'inlineForward';
+        const point = {
+            x: Number.isFinite(Number(caret?.x)) ? Number(caret?.x) : 0,
+            y: Number.isFinite(Number(caret?.y)) ? Number(caret?.y) : 0
+        };
+        const page = this.pages[pageIndex] as { boxes?: Box[] } | undefined;
+        if (!page) {
+            return { kind: 'page-missing', pageIndex, point, box: null };
+        }
+        if (!caret) {
+            return { kind: 'page', pageIndex, point, box: null, reason: 'caret-missing' };
+        }
+
+        const actor = this.findActorById(String(caret.actorId || ''));
+        const nextCaret = actor?.resolveSpatialCaretMove?.({ pageIndex, caret, direction }) ?? null;
+        const probeY = point.y + Math.max(1, Number(caret.height || 0)) / 2;
+        const resolved = this.resolvePointTarget({ pageIndex, x: point.x, y: probeY });
+        const box = resolved.target?.hitBox || null;
+        if (!nextCaret) {
+            return {
+                kind: 'page',
+                pageIndex,
+                point,
+                box,
+                actorId: caret.actorId || undefined,
+                sourceId: caret.sourceId || undefined,
+                reason: actor ? 'actor-did-not-answer' : 'actor-missing'
+            };
+        }
+        return {
+            kind: 'caret',
+            pageIndex,
+            point: { x: nextCaret.x, y: nextCaret.y },
+            box,
+            caret: nextCaret,
+            actorId: nextCaret.actorId || undefined,
+            sourceId: nextCaret.sourceId || undefined
+        };
     }
 
     private findActorById(actorId: string): PackagerUnit | null {

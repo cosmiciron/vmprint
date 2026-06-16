@@ -147,6 +147,8 @@ export type PackagerHitTestInput = {
     box: LayoutBox;
 };
 
+export type PackagerCaretInput = PackagerHitTestInput;
+
 export type PackagerTableCellHitContext = {
     sourceId: string;
     rowIndex?: number;
@@ -199,6 +201,30 @@ export type PackagerBoxHit = {
 };
 
 export type PackagerHitTestResult = PackagerTextHit | PackagerBoxHit;
+
+export type PackagerCaretResult = {
+    kind: 'caret';
+    actorId: string;
+    sourceId: string;
+    sourceOffset: number;
+    lineIndex: number;
+    segmentIndex: number;
+    x: number;
+    y: number;
+    height: number;
+    affinity: 'before' | 'after';
+    segmentDirection?: 'ltr' | 'rtl';
+    segmentIsShaped?: boolean;
+    reason?: string;
+};
+
+export type PackagerSpatialCaretDirection = 'inlineForward' | 'inlineBackward' | 'blockForward' | 'blockBackward';
+
+export type PackagerSpatialCaretMoveInput = {
+    pageIndex: number;
+    caret: PackagerCaretResult;
+    direction: PackagerSpatialCaretDirection;
+};
 
 /** @deprecated Use PackagerReshapeResult */
 export type PackagerSplitResult = PackagerReshapeResult;
@@ -266,6 +292,20 @@ export interface PackagerUnit {
      * own internals can answer without app-side layout reconstruction.
      */
     hitTestPoint?(input: PackagerHitTestInput): PackagerHitTestResult | null | undefined;
+
+    /**
+     * Optional actor-owned caret resolver. The caller supplies a published box
+     * plus a point in that box's local coordinates; actors return a legal caret
+     * slot in page coordinates without app-side line or font reconstruction.
+     */
+    resolveCaretAtPoint?(input: PackagerCaretInput): PackagerCaretResult | null | undefined;
+
+    /**
+     * Optional actor-owned spatial caret traversal. Actors should walk rendered
+     * caret slots in visual order, keeping logical source offsets attached to
+     * the returned slot instead of making callers infer BiDi or wrapping rules.
+     */
+    resolveSpatialCaretMove?(input: PackagerSpatialCaretMoveInput): PackagerCaretResult | null | undefined;
 
     /**
      * Allows stateful observers to reevaluate committed bulletin-board state at
