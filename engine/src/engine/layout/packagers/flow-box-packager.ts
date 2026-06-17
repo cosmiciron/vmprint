@@ -12,19 +12,16 @@ import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIden
 import { SpatialMap } from './spatial-map';
 import {
     ObservationResult,
-    PackagerCaretInput,
-    PackagerCaretResult,
     PackagerContext,
     PackagerHitTestInput,
     PackagerHitTestResult,
     PackagerPlacementPreference,
     PackagerReshapeResult,
     PackagerReshapeProfile,
-    PackagerSpatialCaretMoveInput,
     PackagerUnit,
     resolvePackagerChunkOriginWorldY
 } from './packager-types';
-import { hitTestRichTextBox, resolveCaretInRichTextBox, resolveSpatialCaretMoveInRichTextBoxes } from './text-hit-testing';
+import { hitTestRichTextBox } from './text-hit-testing';
 
 type FlowBoxProcessor = {
     normalizeFlowBlock(element: any, options: { path: number[] }): any;
@@ -241,18 +238,6 @@ export class FlowBoxPackager implements PackagerUnit {
 
     hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
         return hitTestRichTextBox(input, this, {
-            layout: (this.processor as any).config?.layout
-        });
-    }
-
-    resolveCaretAtPoint(input: PackagerCaretInput): PackagerCaretResult | null {
-        return resolveCaretInRichTextBox(input, this, {
-            layout: (this.processor as any).config?.layout
-        });
-    }
-
-    resolveSpatialCaretMove(input: PackagerSpatialCaretMoveInput): PackagerCaretResult | null {
-        return resolveSpatialCaretMoveInRichTextBoxes(input, this.cachedBoxes, this, {
             layout: (this.processor as any).config?.layout
         });
     }
