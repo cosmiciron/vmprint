@@ -21,7 +21,7 @@ import { FragmentTransitionArtifactCollaborator } from './collaborators/fragment
 import { createMorphedBoxMeta, freezeFlowFragment } from './flow-fragment-state';
 import { HeadingTelemetryCollaborator } from './collaborators/heading-telemetry-collaborator';
 import { HeadingSignalCollaborator } from './runtime/signals/heading-signal-publisher';
-import { PageRegionCollaborator } from './runtime/page-finalization/page-region-finalization';
+import { finalizePagesWithCallbacks, PageRegionCollaborator } from './runtime/page-finalization/page-region-finalization';
 import { PageNumberArtifactCollaborator } from './collaborators/page-number-artifact-collaborator';
 import { PageOverrideArtifactCollaborator } from './collaborators/page-override-artifact-collaborator';
 import { PageExclusionArtifactCollaborator } from './collaborators/page-exclusion-artifact-collaborator';
@@ -1595,6 +1595,20 @@ export class LayoutProcessor extends TextProcessor {
         };
 
         return [wrapperBox, ...contentBoxes];
+    }
+
+    protected refreshPageRegionTokens(pages: readonly Page[]): Page[] {
+        const bodyPages = pages.map((page) => ({
+            ...page,
+            boxes: (page.boxes || []).filter((box) => !(
+                box.meta?.generated === true
+                && (box.meta?.sourceType === 'header' || box.meta?.sourceType === 'footer')
+            ))
+        }));
+        return finalizePagesWithCallbacks(bodyPages, this.config, {
+            layoutRegion: (content, rect, pageIndex, sourceType, actorId) =>
+                this.layoutRegion(content, rect, pageIndex, sourceType, actorId)
+        });
     }
 
     private sanitizePageRegionElement(element: Element): Element {

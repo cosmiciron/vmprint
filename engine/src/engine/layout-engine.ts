@@ -800,6 +800,15 @@ function mergeRuntimeReplayPages(
         .map(([, page]) => page);
 }
 
+function runtimePagesContainGeneratedPageRegions(pages: readonly any[]): boolean {
+    return (Array.isArray(pages) ? pages : []).some((page) =>
+        (Array.isArray(page?.boxes) ? page.boxes : []).some((box: any) =>
+            box?.meta?.generated === true
+            && (box.meta.sourceType === 'header' || box.meta.sourceType === 'footer')
+        )
+    );
+}
+
 function isContentOnlyGeometryMismatch(error: unknown): boolean {
     const message = error instanceof Error ? error.message : String(error || '');
     return /^\[LayoutSession\] content-only actor ".+" changed box (width|height)\.$/.test(message)
@@ -1989,13 +1998,32 @@ export class LayoutEngine extends LayoutProcessor {
                 ...extraRest
             } = extras;
             const partial = completion === 'partial' || extraPublishPartial === true;
-            const publishedPages = mergeRuntimeReplayPages(previousPages, pages as any[], { partial });
+            let publishedPages = mergeRuntimeReplayPages(previousPages, pages as any[], { partial });
+            const shouldRefreshPageRegions = !partial && runtimePagesContainGeneratedPageRegions(publishedPages as any[]);
+            const totalPageCountChanged = !partial && previousPages.length !== publishedPages.length;
+            if (shouldRefreshPageRegions) {
+                publishedPages = this.refreshPageRegionTokens(publishedPages as any[]);
+            }
             this.getCurrentLayoutSession()?.publishPartialLayoutPages(publishedPages as any[]);
-            const pageChanges = computeRuntimeReplayPageChanges(
+            const pageChanges = shouldRefreshPageRegions
+                ? (() => {
+                    const previousMax = Math.max(0, previousPages.length - 1);
+                    const nextMax = resolveMaxRuntimePageIndex(publishedPages as any[]);
+                    return {
+                        pageIndexes: resolveRuntimePageIndexRange(0, Math.max(previousMax, nextMax)),
+                        addedPageIndexes: nextMax >= previousPages.length
+                            ? resolveRuntimePageIndexRange(previousPages.length, nextMax)
+                            : [],
+                        removedPageIndexes: previousMax > nextMax
+                            ? resolveRuntimePageIndexRange(nextMax + 1, previousMax)
+                            : []
+                    };
+                })()
+                : computeRuntimeReplayPageChanges(
                 previousTokens,
                 (partial ? pages : publishedPages) as any[],
                 { partial, rangeStartPageIndex }
-            );
+                );
             return {
                 changed: true,
                 kind: 'geometry',
@@ -2132,23 +2160,21 @@ export class LayoutEngine extends LayoutProcessor {
             frontier: affectedFrontier
         });
         try {
-            if (!rangeTarget) {
-                try {
-                    const contentOnly = this.applySourceBackedContentOnlyFormattingUpdate({
-                        session,
-                        pages: previousPages,
-                        actor: formattingActor,
-                        target,
-                        sourceId: normalizedSourceId,
-                        affectedFrontier,
-                        history
-                    });
-                    if (contentOnly) return contentOnly;
-                } catch (error) {
-                    if (!isContentOnlyGeometryMismatch(error)) {
-                        restoreRuntimeElementSourceSnapshot(sourceElement, previousSnapshot);
-                        throw error;
-                    }
+            try {
+                const contentOnly = this.applySourceBackedContentOnlyFormattingUpdate({
+                    session,
+                    pages: previousPages,
+                    actor: formattingActor,
+                    target,
+                    sourceId: normalizedSourceId,
+                    affectedFrontier,
+                    history
+                });
+                if (contentOnly) return contentOnly;
+            } catch (error) {
+                if (!isContentOnlyGeometryMismatch(error)) {
+                    restoreRuntimeElementSourceSnapshot(sourceElement, previousSnapshot);
+                    throw error;
                 }
             }
             const dirtySourceIds = new Set<string>();

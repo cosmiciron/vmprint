@@ -1863,9 +1863,6 @@ function collectActorBoxRefsByActorId(
 
 function assertContentOnlyGeometry(actorId: string, committed: Box, next: Box): void {
     const tolerance = 0.01;
-    if (Math.abs(Number(committed.w || 0) - Number(next.w || 0)) > tolerance) {
-        throw new Error(`[LayoutSession] content-only actor "${actorId}" changed box width.`);
-    }
     if (Math.abs(Number(committed.h || 0) - Number(next.h || 0)) > tolerance) {
         throw new Error(`[LayoutSession] content-only actor "${actorId}" changed box height.`);
     }
