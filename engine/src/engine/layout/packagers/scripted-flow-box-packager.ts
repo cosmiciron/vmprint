@@ -974,9 +974,6 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         if (signals.length === 0) {
             return { changed: false, geometryChanged: false, updateKind: 'none' };
         }
-        // [DIAG] signals found for this actor
-        console.log('[DIAG:ucs] sourceId=%s signals=%d lastSeq=%d', this.sourceId, signals.length, this.lastHandledMessageSequence, signals.map((s) => s.sequence));
-
         const session = getCurrentLayoutSession(context);
         const availableWidth = deriveAvailableWidth(context);
         const availableHeight = deriveAvailableHeight(context);
@@ -1062,8 +1059,6 @@ export class ScriptedFlowBoxPackager implements PackagerUnit {
         const updateKind = Math.abs(nextRequiredHeight - previousRequiredHeight) > 0.01
             ? 'geometry'
             : 'content-only';
-        // [DIAG] height comparison result
-        console.log('[DIAG:ucs] sourceId=%s prev=%s next=%s → %s', this.sourceId, previousRequiredHeight.toFixed(2), nextRequiredHeight.toFixed(2), updateKind);
 
         return {
             changed: true,

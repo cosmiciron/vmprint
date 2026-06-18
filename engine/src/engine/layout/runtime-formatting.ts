@@ -411,9 +411,7 @@ export function applyRuntimeFormattingIntentToSourceElement(options: {
         const nextGeometrySignature = getGeometrySignature?.();
         const geometryChanged = classifiedGeometry
             && (
-                isRuntimeRangeTarget(target)
-                || forceRangeGeometry
-                || previousGeometrySignature === undefined
+                previousGeometrySignature === undefined
                 || nextGeometrySignature === undefined
                 || JSON.stringify(previousGeometrySignature) !== JSON.stringify(nextGeometrySignature)
             );
@@ -463,9 +461,7 @@ export function applyRuntimeFormattingIntentToSourceElement(options: {
     const nextGeometrySignature = getGeometrySignature?.();
     const geometryChanged = classifiedGeometry
         && (
-            rangeTarget
-            || forceRangeGeometry
-            || previousGeometrySignature === undefined
+            previousGeometrySignature === undefined
             || nextGeometrySignature === undefined
             || JSON.stringify(previousGeometrySignature) !== JSON.stringify(nextGeometrySignature)
         );

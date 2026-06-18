@@ -1,5 +1,6 @@
 import type { LayoutProcessor } from '../../layout/layout-core';
 import type { LayoutProfileMetrics } from '../../layout/runtime/session/session-profile-types';
+import type { SessionSafeCheckpoint } from '../../layout/runtime/session/session-progression-types';
 import type { PageCaptureRecord } from '../../layout/runtime/session/session-state-types';
 import type { Page, SimulationStopReason } from '../../types';
 
@@ -78,6 +79,21 @@ export type SimulationContinueResult = {
     elapsedMs: number;
 };
 
+export type SimulationCheckpointRestoreResult = {
+    restored: boolean;
+    checkpointId?: string;
+    checkpointPageIndex?: number;
+    checkpointActorIndex?: number;
+    checkedActorCount?: number;
+    rebuiltActorCount?: number;
+    reason?: string;
+};
+
+export type SimulationCheckpointRestoreOptions = {
+    dirtySourceIds?: readonly string[];
+    dirtyActorIds?: readonly string[];
+};
+
 export interface SimulationRunner {
     getCurrentTick(): number;
     getCurrentPageIndex(): number;
@@ -90,6 +106,10 @@ export interface SimulationRunner {
     isFinished(): boolean;
     getCurrentPages(): Page[];
     runToCompletion(): Page[];
+    restoreSafeCheckpoint(
+        checkpoint: SessionSafeCheckpoint,
+        options?: SimulationCheckpointRestoreOptions
+    ): SimulationCheckpointRestoreResult;
     advanceTick(): boolean;
     continueUntil(options?: SimulationContinueOptions): SimulationContinueResult;
     continueUntilPage(pageIndex: number): SimulationContinueResult;

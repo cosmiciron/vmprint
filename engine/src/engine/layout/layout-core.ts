@@ -926,6 +926,7 @@ export class LayoutProcessor extends TextProcessor {
         this.activeScriptRuntimeHost = scriptRuntimeHost;
         const session = new LayoutSession({
             runtime: this.getRuntime(),
+            config: this.config,
             collaborators,
             asyncThoughtHost,
             resolvePageGeometry: (pageIndex) => LayoutUtils.resolvePageGeometry(this.config, pageIndex),

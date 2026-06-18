@@ -72,6 +72,7 @@ import {
     computePageTokenChanges
 } from './runtime/simulation/core/page-snapshots';
 import type {
+    SimulationCheckpointRestoreResult,
     SimulationContinueOptions,
     SimulationContinueResult,
     SimulationRunner
@@ -262,6 +263,11 @@ type RuntimeReplayState = {
     source: string;
 };
 
+type RuntimeReplayDirtyScope = {
+    dirtySourceIds?: readonly string[];
+    dirtyActorIds?: readonly string[];
+};
+
 export type WorldSimulationHitTestRequest = {
     pageIndex?: number;
     x?: number;
@@ -423,6 +429,17 @@ class WorldSimulation {
         return this.pages;
     }
 
+    private refreshPagesFromRuntimeResult(result: { pages?: unknown } | null | undefined): void {
+        if (Array.isArray(result?.pages)) {
+            this.pages = result.pages as ReturnType<LayoutProcessor['simulate']>;
+            return;
+        }
+        const pages = this.engine.getLastPrintPipelineSnapshot().pages;
+        if (Array.isArray(pages) && pages.length > 0) {
+            this.pages = pages as ReturnType<LayoutProcessor['simulate']>;
+        }
+    }
+
     hitTestPoint(request: WorldSimulationHitTestRequest = {}): WorldSimulationHitTestResult {
         const pageIndex = Math.max(0, Math.floor(Number(request.pageIndex || 0)));
         const point = {
@@ -519,27 +536,28 @@ class WorldSimulation {
     applyIntent(intent: RuntimeIntent = {}): RuntimeIntentResult {
         const result = this.engine.applyRuntimeIntent(this.elements, intent);
         this.lastRuntimeIntentResult = result;
-        this.pages = Array.isArray(result.pages)
-            ? result.pages as ReturnType<LayoutProcessor['simulate']>
-            : this.pages;
+        this.refreshPagesFromRuntimeResult(result);
         return result;
     }
 
     applyFormatting(intent: RuntimeIntent = {}): RuntimeIntentResult {
         const result = this.engine.applyRuntimeFormattingIntent(this.elements, intent);
         this.lastRuntimeIntentResult = result;
-        this.pages = Array.isArray(result.pages)
-            ? result.pages as ReturnType<LayoutProcessor['simulate']>
-            : this.pages;
+        this.refreshPagesFromRuntimeResult(result);
+        return result;
+    }
+
+    applyFormattingBatch(request: Record<string, unknown> = {}): RuntimeIntentResult {
+        const result = this.engine.applyRuntimeFormattingBatchIntent(this.elements, request);
+        this.lastRuntimeIntentResult = result;
+        this.refreshPagesFromRuntimeResult(result);
         return result;
     }
 
     restoreFormatting(intent: RuntimeIntent = {}): RuntimeIntentResult {
         const result = this.engine.applyRuntimeFormattingRestoreIntent(this.elements, intent);
         this.lastRuntimeIntentResult = result;
-        this.pages = Array.isArray(result.pages)
-            ? result.pages as ReturnType<LayoutProcessor['simulate']>
-            : this.pages;
+        this.refreshPagesFromRuntimeResult(result);
         return result;
     }
 
@@ -549,18 +567,14 @@ class WorldSimulation {
             elements: this.elements
         });
         this.lastRuntimeIntentResult = result;
-        this.pages = Array.isArray(result.pages)
-            ? result.pages as ReturnType<LayoutProcessor['simulate']>
-            : this.pages;
+        this.refreshPagesFromRuntimeResult(result);
         return result;
     }
 
     continueReplay(request: Record<string, unknown> = {}): RuntimeIntentResult {
         const result = this.engine.continueReplay(request);
         this.lastRuntimeIntentResult = result;
-        this.pages = Array.isArray(result.pages)
-            ? result.pages as ReturnType<LayoutProcessor['simulate']>
-            : this.pages;
+        this.refreshPagesFromRuntimeResult(result);
         return result;
     }
 
@@ -678,11 +692,23 @@ function normalizeRuntimeReplayRequestOptions(payload: unknown): RuntimeReplayUn
     if (!payload || typeof payload !== 'object') return null;
     const raw = payload as Record<string, unknown>;
     const explicit = normalizeRuntimeReplayUntilOptions((raw.options || raw.replayUntil) as RuntimeReplayUntilOptions | null | undefined);
+    const direct = normalizeRuntimeReplayUntilOptions({
+        page: raw.replayUntilPage,
+        y: raw.replayUntilY,
+        untilPage: raw.untilPage,
+        untilY: raw.untilY,
+        maxMilliseconds: raw.maxMilliseconds
+    });
     const region = normalizeRuntimeWorldRegion(raw);
     return {
         ...(region || {}),
+        ...(direct || {}),
         ...(explicit || {})
     };
+}
+
+function didRuntimeReplayReachRequestedFrontier(result: SimulationContinueResult | null | undefined): boolean {
+    return result?.reason === 'until-page' || result?.reason === 'until-y' || result?.finished === true;
 }
 
 function serializeRuntimeReplayResult(result: RuntimeIntentResult, replayId?: string | null): RuntimeIntentResult {
@@ -701,22 +727,44 @@ function buildRuntimePageTokenMap(pages: readonly any[]): Map<number, string> {
     return new Map((Array.isArray(pages) ? pages : []).map((page: any) => [Number(page.index), buildPageSnapshotToken(page)] as const));
 }
 
+function resolveRuntimePageIndexRange(start: number, end: number): number[] {
+    const resolvedStart = Math.max(0, Math.floor(Number(start) || 0));
+    const resolvedEnd = Math.max(resolvedStart - 1, Math.floor(Number(end) || 0));
+    return Array.from({ length: Math.max(0, resolvedEnd - resolvedStart + 1) }, (_entry, index) => resolvedStart + index);
+}
+
+function resolveMaxRuntimePageIndex(pages: readonly any[]): number {
+    return (Array.isArray(pages) ? pages : []).reduce((max, page) => {
+        const pageIndex = Number(page?.index);
+        return Number.isFinite(pageIndex) ? Math.max(max, Math.floor(pageIndex)) : max;
+    }, -1);
+}
+
 function computeRuntimeReplayPageChanges(
     previousTokens: Map<number, string>,
     nextPages: readonly any[],
-    options: { partial: boolean }
+    options: { partial: boolean; rangeStartPageIndex?: number }
 ): { pageIndexes: number[]; addedPageIndexes: number[]; removedPageIndexes: number[] } {
+    if (Number.isFinite(options.rangeStartPageIndex)) {
+        const start = Math.max(0, Math.floor(Number(options.rangeStartPageIndex)));
+        const previousMax = previousTokens.size > 0 ? Math.max(...previousTokens.keys()) : -1;
+        const nextMax = resolveMaxRuntimePageIndex(nextPages);
+        const end = options.partial ? nextMax : Math.max(previousMax, nextMax);
+        const pageIndexes = resolveRuntimePageIndexRange(start, end);
+        const addedPageIndexes = pageIndexes.filter((pageIndex) => pageIndex > previousMax && pageIndex <= nextMax);
+        const removedPageIndexes = options.partial
+            ? []
+            : pageIndexes.filter((pageIndex) => pageIndex > nextMax && pageIndex <= previousMax);
+        return { pageIndexes, addedPageIndexes, removedPageIndexes };
+    }
     const nextTokens = buildRuntimePageTokenMap(nextPages);
     if (!options.partial) return computePageTokenChanges(previousTokens, nextTokens);
 
     const changed = new Set<number>();
     const added = new Set<number>();
-    const removed = new Set<number>();
-    const observedPageIndexes = new Set<number>();
     for (const page of nextPages || []) {
         const pageIndex = Number(page?.index);
         if (!Number.isFinite(pageIndex)) continue;
-        observedPageIndexes.add(pageIndex);
         const nextToken = nextTokens.get(pageIndex);
         if (!previousTokens.has(pageIndex)) {
             added.add(pageIndex);
@@ -725,18 +773,31 @@ function computeRuntimeReplayPageChanges(
             changed.add(pageIndex);
         }
     }
-    for (const pageIndex of observedPageIndexes) {
-        if (nextTokens.has(pageIndex)) continue;
-        if (previousTokens.has(pageIndex)) {
-            removed.add(pageIndex);
-            changed.add(pageIndex);
-        }
-    }
     return {
         pageIndexes: Array.from(changed).sort((a, b) => a - b),
         addedPageIndexes: Array.from(added).sort((a, b) => a - b),
-        removedPageIndexes: Array.from(removed).sort((a, b) => a - b)
+        removedPageIndexes: []
     };
+}
+
+function mergeRuntimeReplayPages(
+    previousPages: readonly any[],
+    replayPages: readonly any[],
+    options: { partial: boolean }
+): unknown[] {
+    if (!options.partial) return [...replayPages];
+    const merged = new Map<number, any>();
+    for (const page of previousPages || []) {
+        const pageIndex = Number(page?.index);
+        if (Number.isFinite(pageIndex)) merged.set(pageIndex, page);
+    }
+    for (const page of replayPages || []) {
+        const pageIndex = Number(page?.index);
+        if (Number.isFinite(pageIndex)) merged.set(pageIndex, page);
+    }
+    return Array.from(merged.entries())
+        .sort(([left], [right]) => left - right)
+        .map(([, page]) => page);
 }
 
 function isContentOnlyGeometryMismatch(error: unknown): boolean {
@@ -798,6 +859,22 @@ function clearRuntimeMaterializationState(element: Element): void {
     }
 }
 
+function addRuntimeDirtySourceId(target: Set<string>, sourceId: unknown): void {
+    const normalized = LayoutUtils.normalizeAuthorSourceId(sourceId) || String(sourceId || '').trim();
+    if (normalized) target.add(normalized);
+}
+
+function addRuntimeDirtySourcePathIds(
+    target: Set<string>,
+    sourcePath: PackagerRuntimeSourcePath,
+    preferredSourceId?: unknown
+): void {
+    addRuntimeDirtySourceId(target, preferredSourceId);
+    for (const element of [...sourcePath.ancestors, sourcePath.element]) {
+        addRuntimeDirtySourceId(target, element?.properties?.sourceId);
+    }
+}
+
 function readRuntimeBoxSourceId(box: any): string {
     return String(box?.meta?.sourceId || box?.properties?.sourceId || box?.sourceId || '').trim();
 }
@@ -829,6 +906,33 @@ function resolveRuntimeSourceFrontierFromPages(pages: readonly any[], sourceId: 
         }
     }
     return normalized ? { pageIndex: 0, cursorY: 0, worldY: 0, sourceId: normalized } : null;
+}
+
+function compareRuntimeReplayFrontiers(
+    left: NonNullable<RuntimeIntentResult['update']>['replayFrontier'] | null | undefined,
+    right: NonNullable<RuntimeIntentResult['update']>['replayFrontier'] | null | undefined
+): number {
+    if (!left && !right) return 0;
+    if (!left) return 1;
+    if (!right) return -1;
+    const leftPage = Number.isFinite(Number(left.pageIndex)) ? Number(left.pageIndex) : 0;
+    const rightPage = Number.isFinite(Number(right.pageIndex)) ? Number(right.pageIndex) : 0;
+    if (leftPage !== rightPage) return leftPage - rightPage;
+    const leftY = Number.isFinite(Number(left.worldY))
+        ? Number(left.worldY)
+        : Number.isFinite(Number(left.cursorY)) ? Number(left.cursorY) : 0;
+    const rightY = Number.isFinite(Number(right.worldY))
+        ? Number(right.worldY)
+        : Number.isFinite(Number(right.cursorY)) ? Number(right.cursorY) : 0;
+    return leftY - rightY;
+}
+
+function resolveEarliestRuntimeReplayFrontier(
+    frontiers: Array<NonNullable<RuntimeIntentResult['update']>['replayFrontier'] | null | undefined>
+): NonNullable<RuntimeIntentResult['update']>['replayFrontier'] | null {
+    return frontiers
+        .filter((frontier): frontier is NonNullable<RuntimeIntentResult['update']>['replayFrontier'] => !!frontier)
+        .sort(compareRuntimeReplayFrontiers)[0] ?? null;
 }
 
 function redrawRuntimeActorThroughHosts(
@@ -1163,6 +1267,10 @@ export class LayoutEngine extends LayoutProcessor {
             ...intent,
             replayUntil
         });
+        return this.activateRuntimeReplayResult(result);
+    }
+
+    private activateRuntimeReplayResult(result: RuntimeIntentResult): RuntimeIntentResult {
         const replaySession = result.replaySession;
         if (!replaySession) {
             this.activeRuntimeReplay = null;
@@ -1281,6 +1389,298 @@ export class LayoutEngine extends LayoutProcessor {
         });
     }
 
+    applyRuntimeFormattingBatchIntent(
+        elements: Parameters<LayoutProcessor['simulate']>[0],
+        request: Record<string, unknown> = {}
+    ): RuntimeIntentResult {
+        const rawIntents = Array.isArray(request.intents)
+            ? request.intents
+            : Array.isArray(request.targets)
+                ? request.targets.map((target) => ({
+                    kind: 'formatting',
+                    target,
+                    patch: request.patch
+                }))
+                : [];
+        const previousPages = this.getLastPrintPipelineSnapshot().pages as any[];
+        const mutations: Array<{
+            sourceElement: Element;
+            previousSnapshot: Record<string, unknown>;
+            sourceId: string;
+            actorId?: string;
+            frontier: NonNullable<RuntimeIntentResult['update']>['replayFrontier'] | null;
+            history: unknown;
+        }> = [];
+        const actorIds = new Set<string>();
+        const sourceIds = new Set<string>();
+        const dirtySourceIds = new Set<string>();
+        const dirtyActorIds = new Set<string>();
+
+        try {
+            for (const rawIntent of rawIntents) {
+                const intent = rawIntent && typeof rawIntent === 'object'
+                    ? rawIntent as RuntimeIntent
+                    : {};
+                const formatting = normalizeRuntimeFormattingPatch(intent.patch || {});
+                if (!Object.keys(formatting).length) continue;
+                const target = this.resolveRuntimeFormattingTarget(intent.target || {});
+                if (!target.sourceId) continue;
+                const actor = this.resolveRuntimeFormattingActor(this.getCurrentLayoutSession(), intent.target || {});
+                const rangeTarget = isRuntimeRangeTarget(target);
+                const directPath = findRuntimeElementPathBySourceId(elements as Element[], target.sourceId);
+                const actorPath = this.resolveRuntimeFormattingSourcePathForActor(actor ?? null, target);
+                const sourcePaths = [directPath, actorPath].filter((path, index, paths): path is PackagerRuntimeSourcePath =>
+                    !!path && paths.findIndex((candidate) => candidate?.element === path.element) === index
+                );
+                let applied: {
+                    sourcePath: PackagerRuntimeSourcePath;
+                    sourceElement: Element;
+                    previousSnapshot: Record<string, unknown>;
+                } | null = null;
+                for (const sourcePath of sourcePaths) {
+                    const sourceElement = sourcePath.element;
+                    const previousSnapshot = cloneRuntimeElementSourceSnapshot(sourceElement);
+                    const previousStyle = sourceElement.properties && typeof sourceElement.properties.style === 'object' && sourceElement.properties.style
+                        ? { ...sourceElement.properties.style }
+                        : {};
+                    const changed = rangeTarget
+                        ? applyRuntimeRangeFormattingPatch(sourceElement, formatting, target)
+                        : Object.entries(formatting).some(([key, value]) => previousStyle[key] !== value);
+                    if (!changed) continue;
+                    if (!rangeTarget) {
+                        sourceElement.properties = {
+                            ...(sourceElement.properties || {}),
+                            style: {
+                                ...previousStyle,
+                                ...formatting
+                            }
+                        };
+                    }
+                    applied = { sourcePath, sourceElement, previousSnapshot };
+                    break;
+                }
+                if (!applied) continue;
+                const { sourcePath, sourceElement, previousSnapshot } = applied;
+                for (const element of [...sourcePath.ancestors, sourceElement]) {
+                    clearRuntimeMaterializationState(element);
+                }
+                const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(target.sourceId) || target.sourceId;
+                const formattingActor = this.resolveRuntimeFormattingActorForSourcePath(
+                    this.getCurrentLayoutSession(),
+                    sourcePath,
+                    target,
+                    actor
+                );
+                const actorId = target.actorId || formattingActor?.actorId;
+                if (actorId) actorIds.add(actorId);
+                if (actorId) dirtyActorIds.add(actorId);
+                sourceIds.add(normalizedSourceId);
+                addRuntimeDirtySourcePathIds(dirtySourceIds, sourcePath, normalizedSourceId);
+                const frontier = resolveRuntimeSourceFrontierFromPages(previousPages, target.sourceId);
+                mutations.push({
+                    sourceElement,
+                    previousSnapshot,
+                    sourceId: normalizedSourceId,
+                    actorId,
+                    frontier,
+                    history: this.buildRuntimeFormattingHistoryEntry({
+                        target: {
+                            ...(intent.target || {}),
+                            sourceId: target.sourceId,
+                            actorId
+                        },
+                        patch: formatting,
+                        before: previousSnapshot,
+                        after: cloneRuntimeElementSourceSnapshot(sourceElement),
+                        frontier
+                    })
+                });
+            }
+
+            if (!mutations.length) {
+                const session = this.getCurrentLayoutSession();
+                const runtimeSession = session as {
+                    resolveActorRuntimeFrontier?(actor: RuntimeActor, options: { actorId?: string; sourceId?: string; preferVisibleActorRefs?: boolean }): {
+                        pageIndex?: unknown;
+                        cursorY?: unknown;
+                        worldY?: unknown;
+                    } | null;
+                    invalidateSafeCheckpointsAfterFrontier?(frontier: unknown): void;
+                    publishActorSignal?(signal: unknown): unknown;
+                    getRegisteredActors?(): readonly RuntimeActor[];
+                } | null;
+                const signalMutations: Array<{
+                    actor: RuntimeActor;
+                    sourceElement: Element;
+                    previousSnapshot: Record<string, unknown>;
+                    frontier: NonNullable<RuntimeIntentResult['update']>['replayFrontier'] | null;
+                    history: unknown;
+                    geometryChanged: boolean;
+                }> = [];
+                if (runtimeSession) {
+                    for (const rawIntent of rawIntents) {
+                        const intent = rawIntent && typeof rawIntent === 'object'
+                            ? rawIntent as RuntimeIntent
+                            : {};
+                        const formatting = normalizeRuntimeFormattingPatch(intent.patch || {});
+                        if (!Object.keys(formatting).length) continue;
+                        const actor = this.resolveRuntimeFormattingActor(session, intent.target || {});
+                        const element = this.getRuntimeFormattingElement(actor);
+                        const target = this.resolveRuntimeFormattingTarget(intent.target || {});
+                        if (!actor || !element) continue;
+                        const previousSnapshot = cloneRuntimeElementSourceSnapshot(element);
+                        const previousStyle = element.properties && typeof element.properties.style === 'object' && element.properties.style
+                            ? { ...element.properties.style }
+                            : {};
+                        const rangeTarget = isRuntimeRangeTarget(intent.target || {});
+                        const changed = rangeTarget || Object.entries(formatting).some(([key, value]) => previousStyle[key] !== value);
+                        if (!changed) continue;
+                        const frontier = runtimeSession.resolveActorRuntimeFrontier?.(actor, {
+                            actorId: actor.actorId,
+                            sourceId: actor.sourceId,
+                            preferVisibleActorRefs: true
+                        }) ?? null;
+                        const pageIndex = Number.isFinite(Number(frontier?.pageIndex))
+                            ? Math.max(0, Math.floor(Number(frontier?.pageIndex)))
+                            : 0;
+                        const contextBase = this.buildRuntimeFormattingContext(session, pageIndex);
+                        const resolvedTarget = {
+                            ...(intent.target || {}),
+                            ...target,
+                            sourceId: target.sourceId || actor.sourceId,
+                            actorId: actor.actorId
+                        };
+                        runtimeSession.publishActorSignal?.({
+                            topic: buildRuntimeIntentTopic(actor.sourceId || target.sourceId),
+                            publisherActorId: 'app:runtime-intent',
+                            publisherSourceId: 'app:runtime-intent',
+                            publisherActorKind: 'runtime-intent',
+                            pageIndex,
+                            cursorY: Number.isFinite(Number(frontier?.cursorY)) ? Number(frontier?.cursorY) : 0,
+                            ...(Number.isFinite(Number(frontier?.worldY)) ? { worldY: Number(frontier?.worldY) } : {}),
+                            signalKey: this.nextRuntimeIntentSignalKey('formatting', actor),
+                            payload: {
+                                kind: 'formatting',
+                                target: resolvedTarget,
+                                patch: formatting
+                            }
+                        });
+                        const observationResult = actor.updateCommittedState?.({
+                            ...contextBase,
+                            pageIndex,
+                            cursorY: Number.isFinite(Number(frontier?.cursorY)) ? Number(frontier?.cursorY) : 0
+                        }) ?? actor.observeCommittedSignals?.({
+                            ...contextBase,
+                            pageIndex,
+                            cursorY: Number.isFinite(Number(frontier?.cursorY)) ? Number(frontier?.cursorY) : 0
+                        });
+                        const observation = normalizeObservationResult(observationResult as any);
+                        if (!observation?.changed) {
+                            restoreRuntimeElementSourceSnapshot(element, previousSnapshot);
+                            continue;
+                        }
+                        const affectedFrontier = (frontier ?? observation.earliestAffectedFrontier ?? null) as NonNullable<RuntimeIntentResult['update']>['replayFrontier'] | null;
+                        if (affectedFrontier) {
+                            runtimeSession.invalidateSafeCheckpointsAfterFrontier?.(affectedFrontier);
+                        }
+                        if (actor.actorId) actorIds.add(actor.actorId);
+                        if (actor.sourceId) sourceIds.add(actor.sourceId);
+                        if (actor.actorId) dirtyActorIds.add(actor.actorId);
+                        addRuntimeDirtySourceId(dirtySourceIds, actor.sourceId);
+                        signalMutations.push({
+                            actor,
+                            sourceElement: element,
+                            previousSnapshot,
+                            frontier: affectedFrontier,
+                            history: this.buildRuntimeFormattingHistoryEntry({
+                                actor,
+                                target: resolvedTarget,
+                                patch: formatting,
+                                before: previousSnapshot,
+                                after: cloneRuntimeElementSourceSnapshot(element),
+                                frontier: affectedFrontier
+                            }),
+                            geometryChanged: Boolean(observation.geometryChanged)
+                        });
+                    }
+                }
+
+                if (!signalMutations.length) {
+                    return {
+                        changed: false,
+                        reason: 'already-current'
+                    };
+                }
+
+                if (!signalMutations.some((mutation) => mutation.geometryChanged)) {
+                    return {
+                        changed: true,
+                        kind: 'content-only',
+                        history: signalMutations.map((mutation) => mutation.history),
+                        update: {
+                            kind: 'content-only',
+                            source: 'runtime-formatting',
+                            actorIds: Array.from(actorIds),
+                            sourceIds: Array.from(sourceIds),
+                            pageIndexes: []
+                        },
+                        pageIndexes: [],
+                        pages: previousPages
+                    };
+                }
+
+                const actors = collectRuntimeFormattingActors(runtimeSession?.getRegisteredActors?.() ?? []);
+                for (const mutation of signalMutations) {
+                    refreshRuntimeActorHostChain(actors, mutation.actor);
+                }
+                const replay = this.applyRuntimeGeometryReplay(
+                    elements,
+                    resolveEarliestRuntimeReplayFrontier(signalMutations.map((mutation) => mutation.frontier)),
+                    'runtime-formatting',
+                    normalizeRuntimeReplayRequestOptions(request),
+                    {
+                        dirtySourceIds: Array.from(dirtySourceIds),
+                        dirtyActorIds: Array.from(dirtyActorIds)
+                    }
+                );
+                return this.activateRuntimeReplayResult({
+                    ...replay,
+                    history: signalMutations.map((mutation) => mutation.history),
+                    update: {
+                        ...(replay.update || { kind: 'geometry', source: 'runtime-formatting', actorIds: [], sourceIds: [], pageIndexes: [] }),
+                        actorIds: Array.from(actorIds),
+                        sourceIds: Array.from(sourceIds)
+                    }
+                });
+            }
+
+            const replay = this.applyRuntimeGeometryReplay(
+                elements,
+                resolveEarliestRuntimeReplayFrontier(mutations.map((mutation) => mutation.frontier)),
+                'runtime-formatting',
+                normalizeRuntimeReplayRequestOptions(request),
+                {
+                    dirtySourceIds: Array.from(dirtySourceIds),
+                    dirtyActorIds: Array.from(dirtyActorIds)
+                }
+            );
+            return this.activateRuntimeReplayResult({
+                ...replay,
+                history: mutations.map((mutation) => mutation.history),
+                update: {
+                    ...(replay.update || { kind: 'geometry', source: 'runtime-formatting', actorIds: [], sourceIds: [], pageIndexes: [] }),
+                    actorIds: Array.from(actorIds),
+                    sourceIds: Array.from(sourceIds)
+                }
+            });
+        } catch (error) {
+            for (const mutation of mutations.reverse()) {
+                restoreRuntimeElementSourceSnapshot(mutation.sourceElement, mutation.previousSnapshot);
+            }
+            throw error;
+        }
+    }
+
     applyRuntimeFormattingRestoreIntent(
         elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent = {}
@@ -1349,6 +1749,33 @@ export class LayoutEngine extends LayoutProcessor {
         };
     }
 
+    private resolveRuntimeFormattingActorForSourcePath(
+        session: unknown,
+        sourcePath: PackagerRuntimeSourcePath,
+        target: ReturnType<LayoutEngine['resolveRuntimeFormattingTarget']>,
+        fallbackActor?: RuntimeActor | null
+    ): RuntimeActor | null {
+        if (fallbackActor) return fallbackActor;
+        const candidateSourceIds = [
+            target.sourceId,
+            ...[...sourcePath.ancestors, sourcePath.element]
+                .reverse()
+                .map((element) => String(element?.properties?.sourceId || '').trim())
+        ];
+        const seen = new Set<string>();
+        for (const sourceId of candidateSourceIds) {
+            const normalized = LayoutUtils.normalizeAuthorSourceId(sourceId) || sourceId;
+            if (!normalized || seen.has(normalized)) continue;
+            seen.add(normalized);
+            const actor = this.resolveRuntimeFormattingActor(session, {
+                sourceId: normalized,
+                actorId: target.actorId
+            });
+            if (actor) return actor;
+        }
+        return null;
+    }
+
     private buildRuntimeFormattingContext(session: unknown, pageIndex = 0): Record<string, unknown> {
         const runtimeSession = session as {
             getSimulationTick?(): number;
@@ -1408,30 +1835,167 @@ export class LayoutEngine extends LayoutProcessor {
         };
     }
 
+    private applySourceBackedContentOnlyFormattingUpdate({
+        session,
+        pages,
+        actor,
+        target,
+        sourceId,
+        affectedFrontier,
+        history
+    }: {
+        session: unknown;
+        pages: any[];
+        actor: RuntimeActor | null;
+        target: ReturnType<LayoutEngine['resolveRuntimeFormattingTarget']>;
+        sourceId: string;
+        affectedFrontier: unknown;
+        history: unknown;
+    }): RuntimeIntentResult | null {
+        if (!actor) return null;
+        const runtimeSession = session as {
+            getRegisteredActors?(): readonly RuntimeActor[];
+            applyContentOnlyActorUpdates?(
+                pages: readonly unknown[],
+                currentPageBoxes: unknown[],
+                actors: readonly RuntimeActor[],
+                contextBase: Record<string, unknown>
+            ): { patchedActors: number; pageIndexes: number[] };
+        } | null;
+        if (typeof runtimeSession?.applyContentOnlyActorUpdates !== 'function') return null;
+        const frontier = affectedFrontier && typeof affectedFrontier === 'object'
+            ? affectedFrontier as { pageIndex?: unknown }
+            : null;
+        const pageIndex = Number.isFinite(Number(frontier?.pageIndex))
+            ? Math.max(0, Math.floor(Number(frontier?.pageIndex)))
+            : 0;
+        const contextBase = this.buildRuntimeFormattingContext(session, pageIndex);
+        const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
+        const visibleCandidate = refreshRuntimeActorHostChain(actors, actor);
+        const redrawActor = (candidate: RuntimeActor): { patchedActors: number; pageIndexes: number[] } =>
+            runtimeSession.applyContentOnlyActorUpdates?.(pages, [], [candidate], contextBase) ?? { patchedActors: 0, pageIndexes: [] };
+        const { visibleActor, redraw } = redrawRuntimeActorThroughHosts(actors, visibleCandidate, redrawActor);
+        if (Number(redraw?.patchedActors || 0) === 0) return null;
+        return {
+            changed: true,
+            kind: 'content-only',
+            sourceId,
+            actorId: target.actorId || actor.actorId,
+            visibleActorId: visibleActor.actorId,
+            frontier: affectedFrontier,
+            history,
+            redraw,
+            update: {
+                kind: 'content-only',
+                source: 'runtime-formatting',
+                actorIds: [target.actorId || actor.actorId].filter((id): id is string => !!id),
+                sourceIds: [sourceId],
+                pageIndexes: redraw.pageIndexes || []
+            },
+            pageIndexes: redraw.pageIndexes || [],
+            pages
+        };
+    }
+
     private nextRuntimeIntentSignalKey(kind: string, actor: RuntimeActor | null): string {
         const actorKey = String(actor?.actorId || actor?.sourceId || 'unknown').trim() || 'unknown';
         return `runtime-intent:${kind}:${actorKey}:${++this.runtimeIntentSequence}`;
+    }
+
+    private createRuntimeGeometryReplayRunner(
+        elements: Parameters<LayoutProcessor['simulate']>[0],
+        replayFrontier: NonNullable<RuntimeIntentResult['update']>['replayFrontier'] | null,
+        dirtyScope: RuntimeReplayDirtyScope = {}
+    ): {
+        runner: SimulationRunner;
+        replay: Record<string, unknown>;
+    } {
+        const previousSession = this.getCurrentLayoutSession();
+        const checkpoint = replayFrontier
+            ? (() => {
+                previousSession?.invalidateSafeCheckpointsAfterFrontier?.(replayFrontier as any);
+                return previousSession?.resolveSafeCheckpoint?.(replayFrontier as any) ?? null;
+            })()
+            : null;
+        if (!checkpoint) {
+            return {
+                runner: super.createSimulationRunner(elements),
+                replay: {
+                    replayStrategy: 'full',
+                    checkpointFallbackReason: replayFrontier ? 'missing-checkpoint' : 'missing-frontier'
+                }
+            };
+        }
+        let runner = super.createSimulationRunner(elements);
+        try {
+            const checkpointRestore: SimulationCheckpointRestoreResult = runner.restoreSafeCheckpoint(checkpoint, dirtyScope);
+            if (!checkpointRestore.restored) {
+                return {
+                    runner,
+                    replay: {
+                        replayStrategy: 'full',
+                        checkpointFallbackReason: checkpointRestore.reason || 'checkpoint-restore-skipped'
+                    }
+                };
+            }
+            return {
+                runner,
+                replay: {
+                    replayStrategy: 'checkpoint',
+                    checkpoint: checkpointRestore
+                }
+            };
+        } catch (error) {
+            runner = super.createSimulationRunner(elements);
+            return {
+                runner,
+                replay: {
+                    replayStrategy: 'full',
+                    checkpointFallbackReason: 'checkpoint-restore-failed',
+                    checkpointRestoreError: error instanceof Error ? error.message : String(error || '')
+                }
+            };
+        }
     }
 
     private applyRuntimeGeometryReplay(
         elements: Parameters<LayoutProcessor['simulate']>[0],
         affectedFrontier: unknown,
         source = 'runtime-formatting',
-        replayUntil?: RuntimeReplayUntilOptions | null
+        replayUntil?: RuntimeReplayUntilOptions | null,
+        dirtyScope: RuntimeReplayDirtyScope = {}
     ): RuntimeIntentResult {
         const previousPages = this.getLastPrintPipelineSnapshot().pages as any[];
         const previousTokens = buildRuntimePageTokenMap(previousPages);
         const replayFrontier = normalizeRuntimeReplayFrontier(affectedFrontier);
         const untilOptions = normalizeRuntimeReplayUntilOptions(replayUntil);
+        const replayRun = this.createRuntimeGeometryReplayRunner(elements, replayFrontier, dirtyScope);
+        const checkpointPageIndex = Number((replayRun.replay as { checkpoint?: { checkpointPageIndex?: unknown } }).checkpoint?.checkpointPageIndex);
+        const frontierPageIndex = Number(replayFrontier?.pageIndex);
+        const rangeStartPageIndex = Number.isFinite(checkpointPageIndex)
+            ? Math.max(0, Math.floor(checkpointPageIndex))
+            : Number.isFinite(frontierPageIndex)
+                ? Math.max(0, Math.floor(frontierPageIndex))
+                : undefined;
         const buildResult = (
             pages: unknown[],
             completion: 'complete' | 'partial',
-            extras: Partial<RuntimeIntentResult> = {}
+            extras: (Partial<RuntimeIntentResult> & { omitPages?: boolean; publishPartial?: boolean }) = {}
         ): RuntimeIntentResult => {
-            const { replay: extraReplay, ...extraRest } = extras;
-            const pageChanges = computeRuntimeReplayPageChanges(previousTokens, pages as any[], {
-                partial: completion === 'partial'
-            });
+            const {
+                replay: extraReplay,
+                omitPages: extraOmitPages,
+                publishPartial: extraPublishPartial,
+                ...extraRest
+            } = extras;
+            const partial = completion === 'partial' || extraPublishPartial === true;
+            const publishedPages = mergeRuntimeReplayPages(previousPages, pages as any[], { partial });
+            this.getCurrentLayoutSession()?.publishPartialLayoutPages(publishedPages as any[]);
+            const pageChanges = computeRuntimeReplayPageChanges(
+                previousTokens,
+                (partial ? pages : publishedPages) as any[],
+                { partial, rangeStartPageIndex }
+            );
             return {
                 changed: true,
                 kind: 'geometry',
@@ -1452,52 +2016,62 @@ export class LayoutEngine extends LayoutProcessor {
                     replayFrontier
                 },
                 pageIndexes: pageChanges.pageIndexes,
-                pages,
+                pages: partial || extraOmitPages ? undefined : [...publishedPages],
                 ...extraRest
             };
         };
 
         if (untilOptions) {
-            const runner = super.createSimulationRunner(elements);
+            const { runner } = replayRun;
             const firstContinue = runner.continueUntil(untilOptions);
             const pages = runner.getCurrentPages();
+            let requestFrontierReached = didRuntimeReplayReachRequestedFrontier(firstContinue);
+            const isReplayRequestFinished = () => runner.isFinished();
             const replaySession: RuntimeReplayContinuation = {
                 continueUntil: (nextUntil?: RuntimeReplayUntilOptions | null) => {
                     const normalized = normalizeRuntimeReplayUntilOptions(nextUntil);
                     const advance = runner.continueUntil(normalized ?? undefined);
+                    requestFrontierReached = requestFrontierReached || didRuntimeReplayReachRequestedFrontier(advance);
                     return buildResult(
                         runner.getCurrentPages(),
-                        runner.isFinished() ? 'complete' : 'partial',
+                        isReplayRequestFinished() ? 'complete' : 'partial',
                         {
                             replay: {
+                                ...replayRun.replay,
                                 continueUntil: {
                                     ...advance,
-                                    requested: normalized ?? null
+                                    requested: normalized ?? null,
+                                    requestFrontierReached
                                 }
                             },
-                            replaySession
+                            replaySession,
+                            omitPages: true,
+                            publishPartial: !runner.isFinished()
                         }
                     );
                 },
                 continueUntilPage: (pageIndex: number) => replaySession.continueUntil({ page: pageIndex }),
                 continueUntilY: (y: number) => replaySession.continueUntil({ y }),
                 getCurrentPages: () => runner.getCurrentPages(),
-                isFinished: () => runner.isFinished()
+                isFinished: isReplayRequestFinished
             };
-            return buildResult(pages, runner.isFinished() ? 'complete' : 'partial', {
+            return buildResult(pages, isReplayRequestFinished() ? 'complete' : 'partial', {
                 replay: {
+                    ...replayRun.replay,
                     continueUntil: {
                         ...firstContinue,
-                        requested: untilOptions
+                        requested: untilOptions,
+                        requestFrontierReached
                     }
                 },
-                replaySession
+                replaySession,
+                publishPartial: !runner.isFinished()
             });
         }
 
-        const pages = super.simulate(elements);
+        const pages = replayRun.runner.runToCompletion();
         return {
-            ...buildResult(pages, 'complete')
+            ...buildResult(pages, 'complete', { replay: replayRun.replay })
         };
     }
 
@@ -1532,6 +2106,8 @@ export class LayoutEngine extends LayoutProcessor {
         const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(target.sourceId) || target.sourceId;
         const previousPages = this.getLastPrintPipelineSnapshot().pages as any[];
         const affectedFrontier = resolveRuntimeSourceFrontierFromPages(previousPages, target.sourceId);
+        const session = this.getCurrentLayoutSession();
+        const formattingActor = this.resolveRuntimeFormattingActorForSourcePath(session, sourcePath, target, actor);
         if (!rangeTarget) {
             sourceElement.properties = {
                 ...(sourceElement.properties || {}),
@@ -1556,15 +2132,45 @@ export class LayoutEngine extends LayoutProcessor {
             frontier: affectedFrontier
         });
         try {
-            const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting', resolveRuntimeReplayUntilIntent(intent));
+            if (!rangeTarget) {
+                try {
+                    const contentOnly = this.applySourceBackedContentOnlyFormattingUpdate({
+                        session,
+                        pages: previousPages,
+                        actor: formattingActor,
+                        target,
+                        sourceId: normalizedSourceId,
+                        affectedFrontier,
+                        history
+                    });
+                    if (contentOnly) return contentOnly;
+                } catch (error) {
+                    if (!isContentOnlyGeometryMismatch(error)) {
+                        restoreRuntimeElementSourceSnapshot(sourceElement, previousSnapshot);
+                        throw error;
+                    }
+                }
+            }
+            const dirtySourceIds = new Set<string>();
+            addRuntimeDirtySourcePathIds(dirtySourceIds, sourcePath, normalizedSourceId);
+            const replay = this.applyRuntimeGeometryReplay(
+                _elements,
+                affectedFrontier,
+                'runtime-formatting',
+                resolveRuntimeReplayUntilIntent(intent),
+                {
+                    dirtySourceIds: Array.from(dirtySourceIds),
+                    dirtyActorIds: [target.actorId || formattingActor?.actorId].filter((id): id is string => !!id)
+                }
+            );
             return {
                 ...replay,
                 sourceId: normalizedSourceId,
-                actorId: target.actorId,
+                actorId: target.actorId || formattingActor?.actorId,
                 history,
                 update: {
                     ...(replay.update || { kind: 'geometry', source: 'runtime-formatting', actorIds: [], sourceIds: [], pageIndexes: [] }),
-                    actorIds: target.actorId ? [target.actorId] : [],
+                    actorIds: [target.actorId || formattingActor?.actorId].filter((id): id is string => !!id),
                     sourceIds: [normalizedSourceId]
                 }
             };
@@ -1681,7 +2287,16 @@ export class LayoutEngine extends LayoutProcessor {
         if (observation.geometryChanged) {
             const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
             refreshRuntimeActorHostChain(actors, actor);
-            const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting-restore', resolveRuntimeReplayUntilIntent(intent));
+            const replay = this.applyRuntimeGeometryReplay(
+                _elements,
+                affectedFrontier,
+                'runtime-formatting-restore',
+                resolveRuntimeReplayUntilIntent(intent),
+                {
+                    dirtySourceIds: [actor.sourceId].filter((id): id is string => !!id),
+                    dirtyActorIds: [actor.actorId].filter((id): id is string => !!id)
+                }
+            );
             return {
                 ...replay,
                 sourceId: actor.sourceId,
@@ -1733,7 +2348,16 @@ export class LayoutEngine extends LayoutProcessor {
             if (isContentOnlyGeometryMismatch(error)) {
                 const replayActors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
                 refreshRuntimeActorHostChain(replayActors, actor);
-                const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting-restore', resolveRuntimeReplayUntilIntent(intent));
+                const replay = this.applyRuntimeGeometryReplay(
+                    _elements,
+                    affectedFrontier,
+                    'runtime-formatting-restore',
+                    resolveRuntimeReplayUntilIntent(intent),
+                    {
+                        dirtySourceIds: [actor.sourceId].filter((id): id is string => !!id),
+                        dirtyActorIds: [actor.actorId].filter((id): id is string => !!id)
+                    }
+                );
                 return {
                     ...replay,
                     sourceId: actor.sourceId,
@@ -1875,7 +2499,16 @@ export class LayoutEngine extends LayoutProcessor {
         if (observation.geometryChanged) {
             const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
             refreshRuntimeActorHostChain(actors, actor);
-            const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting', resolveRuntimeReplayUntilIntent(intent));
+            const replay = this.applyRuntimeGeometryReplay(
+                _elements,
+                affectedFrontier,
+                'runtime-formatting',
+                resolveRuntimeReplayUntilIntent(intent),
+                {
+                    dirtySourceIds: [actor.sourceId].filter((id): id is string => !!id),
+                    dirtyActorIds: [actor.actorId].filter((id): id is string => !!id)
+                }
+            );
             return {
                 ...replay,
                 sourceId: actor.sourceId,
@@ -1929,7 +2562,16 @@ export class LayoutEngine extends LayoutProcessor {
             if (isContentOnlyGeometryMismatch(error)) {
                 const replayActors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
                 refreshRuntimeActorHostChain(replayActors, actor);
-                const replay = this.applyRuntimeGeometryReplay(_elements, affectedFrontier, 'runtime-formatting', resolveRuntimeReplayUntilIntent(intent));
+                const replay = this.applyRuntimeGeometryReplay(
+                    _elements,
+                    affectedFrontier,
+                    'runtime-formatting',
+                    resolveRuntimeReplayUntilIntent(intent),
+                    {
+                        dirtySourceIds: [actor.sourceId].filter((id): id is string => !!id),
+                        dirtyActorIds: [actor.actorId].filter((id): id is string => !!id)
+                    }
+                );
                 return {
                     ...replay,
                     sourceId: actor.sourceId,

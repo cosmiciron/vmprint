@@ -1,5 +1,5 @@
 import { runtimePerformance as performance } from '../performance';
-import type { Box, Page, PageReservationSelector, BoxMeta, Element } from '../types';
+import type { Box, LayoutConfig, Page, PageReservationSelector, BoxMeta, Element } from '../types';
 import type { EngineRuntime } from '../runtime';
 import type { ContinuationArtifacts, FlowBox } from './layout-core-types';
 import type { KeepWithNextFormationPlan, WholeFormationOverflowHandling } from './actor-formation';
@@ -44,6 +44,12 @@ import type {
 import { SimulationReportBridge } from './simulation-report-bridge';
 import type { PageRegionSummary } from './page-region-summary';
 import type { ScriptRegionRef } from './script-region-query';
+import {
+    applyPageOverride,
+    findWinningPageOverride,
+    regionContainsLogicalPageNumber,
+    resolveBaselineRegions
+} from './runtime/page-finalization/page-region-finalization';
 
 import {
     type FragmentTransition,
@@ -214,6 +220,7 @@ import {
 
 type LayoutSessionOptions = {
     runtime: EngineRuntime;
+    config: LayoutConfig;
     collaborators?: readonly Collaborator[];
     asyncThoughtHost?: AsyncThoughtHost | null;
     resolvePageGeometry?: (pageIndex: number) => { width: number; height: number };
@@ -222,6 +229,7 @@ type LayoutSessionOptions = {
 
 export class LayoutSession {
     readonly runtime: EngineRuntime;
+    readonly config: LayoutConfig;
     readonly collaborators: readonly Collaborator[];
     readonly eventDispatcher: EventDispatcher;
     readonly kernel = new Kernel();
@@ -396,6 +404,7 @@ export class LayoutSession {
 
     constructor(options: LayoutSessionOptions) {
         this.runtime = options.runtime;
+        this.config = options.config;
         this.asyncThoughtHost = options.asyncThoughtHost ?? null;
         this.resolvePageGeometry = options.resolvePageGeometry;
         this.collaborators = options.collaborators ?? [];
@@ -1126,14 +1135,30 @@ export class LayoutSession {
         checkpoint: SessionSafeCheckpoint
     ): { currentPageBoxes: Box[]; currentY: number; lastSpacingAfter: number } {
         this.recordProfile('progressionSnapshotCalls', 1);
-        return this.sessionWorldRuntime.preserveCurrentProgressionState(() =>
-            this.actorCommunicationRuntime.restoreSafeCheckpoint(
+        return this.sessionWorldRuntime.preserveCurrentProgressionState(() => {
+            const restored = this.actorCommunicationRuntime.restoreSafeCheckpoint(
                 pages,
                 actorQueue,
                 checkpoint,
                 (restoredQueue, snapshot) => this.restoreSessionBranchStateSnapshot(restoredQueue, snapshot)
-            )
-        );
+            );
+            this.restoreLogicalPageNumberingFromPrefix(pages);
+            return restored;
+        });
+    }
+
+    private restoreLogicalPageNumberingFromPrefix(pages: readonly Page[]): void {
+        const startAt = Math.max(0, Math.floor(Number(this.config.layout.pageNumberStart ?? 1)));
+        let logicalPageNumber = startAt - 1;
+        for (const page of pages) {
+            const baseline = resolveBaselineRegions(this.config, page.index);
+            const override = findWinningPageOverride(page);
+            const resolved = applyPageOverride(baseline, override);
+            const usesLogical = regionContainsLogicalPageNumber(resolved.header)
+                || regionContainsLogicalPageNumber(resolved.footer);
+            if (usesLogical) logicalPageNumber += 1;
+        }
+        this.resetLogicalPageNumbering(logicalPageNumber + 1);
     }
 
     executeSpeculativeBranch<T>(
@@ -1278,10 +1303,14 @@ export class LayoutSession {
                 );
             }
 
+            const nextBoxes = refs.map((_ref, index) => rendered[Math.min(index, rendered.length - 1)]);
+            for (let index = 0; index < refs.length; index++) {
+                assertContentOnlyGeometry(actor.actorId, refs[index].box, nextBoxes[index]);
+            }
+
             for (let index = 0; index < refs.length; index++) {
                 const oldBox = refs[index].box;
-                const nextBox = rendered[Math.min(index, rendered.length - 1)];
-                assertContentOnlyGeometry(actor.actorId, oldBox, nextBox);
+                const nextBox = nextBoxes[index];
                 refs[index].container[refs[index].index] = transplantBoxContent(oldBox, nextBox);
             }
 

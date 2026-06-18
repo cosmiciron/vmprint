@@ -337,8 +337,25 @@ export class DropCapPackager implements PackagerUnit {
             actor: this,
             sourceElement: this.element,
             rebuild: () => this.rebuildLiveFlowBox(),
+            getGeometrySignature: () => this.captureRuntimeGeometrySignature(context),
             forceRangeGeometry: true
         });
+    }
+
+    private captureRuntimeGeometrySignature(context: PackagerContext): Record<string, number | string> {
+        const availableWidth = Math.max(0, Number(context.pageWidth || 0) - context.margins.left - context.margins.right);
+        this.materialize(availableWidth, context);
+        const parts = this.cachedParts;
+        return {
+            requiredHeight: Number(Number(this.requiredHeight || 0).toFixed(3)),
+            dropCapHeight: Number(Number(parts?.dropCap.measuredContentHeight || 0).toFixed(3)),
+            wrapHeight: Number(Number(parts?.wrap.measuredContentHeight || 0).toFixed(3)),
+            bodyHeight: Number(Number(parts?.body?.measuredContentHeight || 0).toFixed(3)),
+            wrapLineCount: parts?.wrap.lines?.length ?? 0,
+            bodyLineCount: parts?.body?.lines?.length ?? 0,
+            wrapOffsetX: Number(Number(parts?.wrapOffsetX || 0).toFixed(3)),
+            overflowPolicy: String(parts?.wrap.overflowPolicy || '')
+        };
     }
 
     private materialize(availableWidth: number, context: PackagerContext): void {

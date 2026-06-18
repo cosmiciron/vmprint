@@ -5,6 +5,7 @@ import { LayoutProcessor } from '../../../layout/layout-core';
 import type { FlowBox } from '../../../layout/layout-core-types';
 import { LayoutSession } from '../../../layout/layout-session';
 import { PageSurface, type PaginationState } from '../../../layout/runtime/session/session-lifecycle-types';
+import type { SessionSafeCheckpoint } from '../../../layout/runtime/session/session-progression-types';
 import type { PageCaptureRecord } from '../../../layout/runtime/session/session-state-types';
 import type { PaginationLoopAction } from '../../../layout/runtime/session/session-pagination-types';
 import { ChunkAdvanceStopped } from '../../../layout/chunk-policy';
@@ -28,6 +29,8 @@ import { collectDiagnosticSources } from '../tooling/diagnostics';
 import { clonePage } from '../tooling/pages';
 import type {
     ExternalMessage,
+    SimulationCheckpointRestoreOptions,
+    SimulationCheckpointRestoreResult,
     SimulationContinueOptions,
     SimulationContinueResult,
     SimulationDiagnosticSnapshot,
@@ -258,6 +261,80 @@ export class SimulationMarchRunner implements SimulationRunner {
             }
         }
         return this.pages;
+    }
+
+    restoreSafeCheckpoint(
+        checkpoint: SessionSafeCheckpoint,
+        options: SimulationCheckpointRestoreOptions = {}
+    ): SimulationCheckpointRestoreResult {
+        if (!checkpoint) {
+            return { restored: false, reason: 'missing-checkpoint' };
+        }
+        const restored = this.session.restoreSafeCheckpoint(this.pages, this.packagers, checkpoint);
+        this.reapplyResolvedCheckpoint(checkpoint, restored);
+        const dirtySourceIds = new Set((options.dirtySourceIds || [])
+            .map((id) => LayoutUtils.normalizeAuthorSourceId(id) || String(id || '').trim())
+            .filter(Boolean));
+        const dirtyActorIds = new Set((options.dirtyActorIds || [])
+            .map((id) => String(id || '').trim())
+            .filter(Boolean));
+        const hasDirtyScope = dirtySourceIds.size > 0 || dirtyActorIds.size > 0;
+        let checkedActorCount = 0;
+        let rebuiltActorCount = 0;
+        for (let index = Math.max(0, this.actorIndex); index < this.packagers.length; index += 1) {
+            const actor = this.packagers[index] as PackagerUnit & {
+                rebuildLiveFlowBox?: () => boolean;
+                flowBox?: { _sourceElement?: { properties?: { sourceId?: unknown } } };
+                element?: { properties?: { sourceId?: unknown } };
+            };
+            checkedActorCount += 1;
+            if (hasDirtyScope && !this.checkpointActorMatchesDirtyScope(actor, dirtySourceIds, dirtyActorIds)) {
+                continue;
+            }
+            if (typeof actor.rebuildLiveFlowBox === 'function' && actor.rebuildLiveFlowBox()) {
+                rebuiltActorCount += 1;
+            }
+        }
+        this.finished = false;
+        this.initialPlacementPass = false;
+        this.initialPaginationComplete = false;
+        this.finalizedPageInCurrentIteration = false;
+        this.lastUpdateSummary = createEmptyUpdateSummary();
+        this.lastRenderRevisionPageIndexes = [];
+        this.pendingGeometryUpdateSummary = null;
+        this.reactiveResettlementCycles = 0;
+        this.reactiveResettlementSignatures.clear();
+        this.session.resumeSimulationProgression();
+        return {
+            restored: true,
+            checkpointId: String(checkpoint.id || checkpoint.snapshotToken || ''),
+            checkpointPageIndex: checkpoint.pageIndex,
+            checkpointActorIndex: checkpoint.actorIndex,
+            checkedActorCount,
+            rebuiltActorCount
+        };
+    }
+
+    private checkpointActorMatchesDirtyScope(
+        actor: PackagerUnit & {
+            flowBox?: { _sourceElement?: { properties?: { sourceId?: unknown } } };
+            element?: { properties?: { sourceId?: unknown } };
+        },
+        dirtySourceIds: ReadonlySet<string>,
+        dirtyActorIds: ReadonlySet<string>
+    ): boolean {
+        const actorId = String(actor.actorId || '').trim();
+        if (actorId && dirtyActorIds.has(actorId)) return true;
+        const sourceCandidates = [
+            actor.sourceId,
+            actor.flowBox?._sourceElement?.properties?.sourceId,
+            actor.element?.properties?.sourceId
+        ];
+        for (const candidate of sourceCandidates) {
+            const normalized = LayoutUtils.normalizeAuthorSourceId(candidate) || String(candidate || '').trim();
+            if (normalized && dirtySourceIds.has(normalized)) return true;
+        }
+        return false;
     }
 
     sendExternalMessage(targetSourceId: string, message: ExternalMessage): boolean {
