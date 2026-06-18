@@ -4,11 +4,16 @@ import { FlowBox, type FlowMaterializationContext } from '../layout-core-types';
 import { resolveDocumentMicroLanePolicy, resolveMinUsableLaneWidth } from '../micro-lane-policy';
 import { reflowTextElementAgainstSpatialField } from '../spatial-field-reflow';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
+import {
+    applyRuntimeFormattingIntentToSourceElement,
+    buildRuntimeIntentTopic
+} from '../runtime-formatting';
 import { resolveSpatialFieldOverflow, SpatialFieldGeometryCapability } from './spatial-field-capability';
 import { SpatialMap } from './spatial-map';
 import { buildContainedContinueFragment, resolveContainedContentSummary, resolveContainedVisibleHeight } from './contained-overflow-fragments';
 import { registerContainedField } from './contained-field-geometry';
 import {
+    ObservationResult,
     PackagerContext,
     PackagerPlacementPreference,
     PackagerReshapeProfile,
@@ -120,6 +125,61 @@ export class ContainedFlowPackager implements PackagerUnit {
     getZIndex(): number {
         const style = this.flowBox.style as { zIndex?: unknown } | undefined;
         return Number.isFinite(Number(style?.zIndex)) ? Number(style?.zIndex) : 0;
+    }
+
+    private rebuildLiveFlowBox(): boolean {
+        const sourceElement = this.flowBox._sourceElement;
+        if (!sourceElement) return false;
+        const shaper = this.processor as unknown as FlowBoxProcessor;
+        (shaper as any).resolvedLinesCache?.delete?.(sourceElement);
+        const path = this.flowBox._normalizedFlowBlock?.identitySeed?.path ?? [0];
+        const normalized = shaper.normalizeFlowBlock(sourceElement, { path });
+        this.flowBox = shaper.shapeNormalizedFlowBlock(normalized);
+        this.isMaterialized = false;
+        this.cachedSpatialBoxes = null;
+        this.cachedPlacementKey = null;
+        this.spatialMap.clear();
+        this.lastAvailableWidth = -1;
+        this.lastContentWidth = -1;
+        this.lastAvailableHeight = -1;
+        this.requiredHeight = 0;
+        return true;
+    }
+
+    getCommittedSignalSubscriptions(): readonly string[] {
+        return [buildRuntimeIntentTopic(this.sourceId)];
+    }
+
+    participatesInCommittedSignalObservation(): boolean {
+        return false;
+    }
+
+    updateCommittedState(context: PackagerContext): ObservationResult | null {
+        return applyRuntimeFormattingIntentToSourceElement({
+            context,
+            actor: this,
+            sourceElement: this.flowBox._sourceElement,
+            rebuild: () => this.rebuildLiveFlowBox(),
+            getGeometrySignature: () => this.captureRuntimeGeometrySignature(context),
+            forceRangeGeometry: true
+        });
+    }
+
+    private captureRuntimeGeometrySignature(context: PackagerContext): Record<string, number | string> {
+        const pageContentWidth = Math.max(0, Number(context.pageWidth || 0) - context.margins.left - context.margins.right);
+        const contentWidth = context.contentWidthOverride ?? -1;
+        this.materialize(pageContentWidth, contentWidth);
+        this.prepareContainedPlacement(context);
+        return {
+            measuredWidth: Number(Number(this.flowBox.measuredWidth || 0).toFixed(3)),
+            measuredContentHeight: Number(Number(this.flowBox.measuredContentHeight || 0).toFixed(3)),
+            marginTop: Number(Number(this.flowBox.marginTop || 0).toFixed(3)),
+            marginBottom: Number(Number(this.flowBox.marginBottom || 0).toFixed(3)),
+            requiredHeight: Number(Number(this.requiredHeight || 0).toFixed(3)),
+            lineCount: Array.isArray(this.flowBox.lines) ? this.flowBox.lines.length : 0,
+            spatialBoxCount: this.cachedSpatialBoxes?.length ?? 0,
+            overflowPolicy: String(this.flowBox.overflowPolicy || '')
+        };
     }
 
     isUnbreakable(_availableHeight: number): boolean {

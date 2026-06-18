@@ -68,6 +68,7 @@ npm install @vmprint/engine @vmprint/local-fonts @vmprint/context-pdf
 
 Start paths:
 
+- [The Spatial OS](documents/THE-SPATIAL-OS.md) for the full architecture overview: world plain, actor packagers, kernel messaging, replay, and why VMPrint is a spatial simulation rather than a layout pipeline
 - [QUICKSTART.md](QUICKSTART.md) for the repo-level orientation
 - [pressrun/](pressrun/) for the smallest practical bootstrap example
 - [engine/README.md](engine/README.md) for the engine package surface

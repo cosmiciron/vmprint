@@ -1,8 +1,9 @@
-import { Box } from '../../types';
+import { Box, Element } from '../../types';
 import { LayoutProcessor } from '../layout-core';
 import { FlowBox, type FlowMaterializationContext } from '../layout-core-types';
 import { LayoutUtils } from '../layout-utils';
 import { materializeSpatialGridFlowBox, splitSpatialGridFlowBox, type SpatialGridLayoutContext } from '../layout-table';
+import { normalizeTableElement } from '../normalized-table';
 import { createContinuationIdentity, createFlowBoxPackagerIdentity, PackagerIdentity } from './packager-identity';
 import {
     PackagerContext,
@@ -12,6 +13,8 @@ import {
     PackagerReshapeResult,
     PackagerReshapeProfile,
     PackagerTableCellHitContext,
+    PackagerRuntimeFormattingTarget,
+    PackagerRuntimeSourcePath,
     PackagerUnit,
     resolvePackagerChunkOriginWorldY
 } from './packager-types';
@@ -50,7 +53,7 @@ function finiteInteger(value: unknown): number | undefined {
 function resolveTableCellHitContext(box: Box): PackagerTableCellHitContext | null {
     const properties = box.properties || {};
     if (box.type !== 'table_cell' && properties._tableCell !== true) return null;
-    const sourceId = String(box.meta?.sourceId || '').trim();
+    const sourceId = String(properties._tableCellSourceId || box.meta?.tableCellSourceId || box.meta?.sourceId || '').trim();
     if (!sourceId) return null;
     return {
         sourceId,
@@ -237,6 +240,33 @@ export class SpatialGridPackager implements PackagerUnit {
         if (!this.flowBox.lines || this.flowBox.lines.length <= 1) return true;
         if (this.flowBox.overflowPolicy === 'move-whole') return true;
         return false;
+    }
+
+    resolveRuntimeFormattingSourcePath(target: PackagerRuntimeFormattingTarget): PackagerRuntimeSourcePath | null {
+        const sourceId = LayoutUtils.normalizeAuthorSourceId(target.sourceId) || String(target.sourceId || '').trim();
+        if (!sourceId || !this.sourceId) return null;
+        const escapedTableSourceId = this.sourceId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const match = new RegExp(`^${escapedTableSourceId}:r(\\d+):c(\\d+):cell$`).exec(sourceId);
+        if (!match) return null;
+
+        const tableElement = this.flowBox._sourceElement || this.flowBox._unresolvedElement;
+        if (!tableElement) return null;
+
+        const rowIndex = Number(match[1]);
+        const colStart = Number(match[2]);
+        if (!Number.isFinite(rowIndex) || !Number.isFinite(colStart)) return null;
+
+        const normalizedTable = normalizeTableElement(tableElement as Element);
+        const row = normalizedTable.rows.find((candidate) => candidate.rowIndex === rowIndex);
+        const cell = row?.cells.find((candidate) => candidate.colStart === colStart);
+        if (!row || !cell?.source) return null;
+
+        return {
+            element: cell.source,
+            ancestors: row.rowElement && row.rowElement !== tableElement
+                ? [tableElement as Element, row.rowElement]
+                : [tableElement as Element]
+        };
     }
 
     hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {

@@ -1,6 +1,7 @@
 import { Element, LayoutConfig, type Box, type LayoutScriptingConfig } from './types';
 import { LayoutProcessor, type LayoutSimulationOptions } from './layout/layout-core';
 import { LayoutUtils } from './layout/layout-utils';
+import { normalizeTableElement } from './layout/normalized-table';
 import {
     buildPageViewportHandle,
     buildWorldViewportHandle,
@@ -51,10 +52,12 @@ import { EngineRuntime } from './runtime';
 import {
     normalizeObservationResult,
     type PackagerHitTestResult,
+    type PackagerRuntimeSourcePath,
     type PackagerUnit
 } from './layout/packagers/packager-types';
 import {
     buildRuntimeIntentTopic,
+    applyRuntimeRangeFormattingPatch,
     cloneRuntimeElementSourceSnapshot,
     cloneRuntimeJsonValue,
     isRuntimeRangeTarget,
@@ -207,6 +210,12 @@ type RuntimeActor = {
     flowBox?: { _sourceElement?: Element };
     element?: Element;
     rebuildLiveFlowBox?(): boolean;
+    resolveRuntimeFormattingSourcePath?(target: {
+        sourceId?: string;
+        actorId?: string;
+        sourceStart?: number;
+        sourceEnd?: number;
+    }): PackagerRuntimeSourcePath | null | undefined;
     updateCommittedState?(context: Record<string, unknown>): unknown;
     observeCommittedSignals?(context: Record<string, unknown>): unknown;
     getHostedRuntimeActors?(): readonly RuntimeActor[];
@@ -298,6 +307,83 @@ function buildWorldSimulationHitBox(box: Box, rect: WorldSimulationHitBox['rect'
     };
 }
 
+function hitTestDistanceToRange(value: number, start: number, end: number): number {
+    const lo = Math.min(start, end);
+    const hi = Math.max(start, end);
+    if (value < lo) return lo - value;
+    if (value > hi) return value - hi;
+    return 0;
+}
+
+function hitTestBoxRect(box: Box): WorldSimulationHitBox['rect'] {
+    return {
+        x: Number(box?.x || 0),
+        y: Number(box?.y || 0),
+        w: Math.max(0, Number(box?.w || 0)),
+        h: Math.max(0, Number(box?.h || 0))
+    };
+}
+
+function hitTestRectContains(rect: WorldSimulationHitBox['rect'], point: { x: number; y: number }): boolean {
+    return rect.w > 0
+        && rect.h > 0
+        && point.x >= rect.x
+        && point.x <= rect.x + rect.w
+        && point.y >= rect.y
+        && point.y <= rect.y + rect.h;
+}
+
+function hitTestLineHeight(box: Box): number {
+    const style = box.style || {};
+    const fontSize = Number(style.fontSize || 12);
+    const lineHeight = Number(style.lineHeight || 1.2);
+    const lineYOffsets = Array.isArray(box.properties?._lineYOffsets)
+        ? box.properties._lineYOffsets.map((value: unknown) => Number(value || 0))
+        : [];
+    for (let index = 1; index < lineYOffsets.length; index += 1) {
+        const delta = lineYOffsets[index]! - lineYOffsets[index - 1]!;
+        if (Number.isFinite(delta) && delta > 0) return Math.max(fontSize, delta);
+    }
+    return Math.max(fontSize, fontSize * (Number.isFinite(lineHeight) ? lineHeight : 1.2));
+}
+
+function scoreTextBoxForHit(box: Box, point: { x: number; y: number }): number {
+    const rect = hitTestBoxRect(box);
+    const lines = Array.isArray(box.lines) ? box.lines : [];
+    if (lines.length === 0) {
+        return hitTestDistanceToRange(point.y, rect.y, rect.y + rect.h) * 1000
+            + hitTestDistanceToRange(point.x, rect.x, rect.x + rect.w);
+    }
+    const lineOffsets = Array.isArray(box.properties?._lineOffsets) ? box.properties._lineOffsets : [];
+    const lineWidths = Array.isArray(box.properties?._lineWidths) ? box.properties._lineWidths : [];
+    const lineYOffsets = Array.isArray(box.properties?._lineYOffsets) ? box.properties._lineYOffsets : [];
+    const lineHeight = hitTestLineHeight(box);
+    let best = Number.POSITIVE_INFINITY;
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+        const lineX = rect.x + Number(lineOffsets[lineIndex] ?? 0);
+        const lineW = Math.max(0, Number(lineWidths[lineIndex] ?? rect.w));
+        const lineY = rect.y + Number(lineYOffsets[lineIndex] ?? lineIndex * lineHeight);
+        const yDistance = hitTestDistanceToRange(point.y, lineY, lineY + lineHeight);
+        const xDistance = hitTestDistanceToRange(point.x, lineX, lineX + lineW);
+        best = Math.min(best, yDistance * 1000 + xDistance);
+    }
+    return best;
+}
+
+function resolveBestOverlappingTextHitBox(boxes: readonly Box[], point: { x: number; y: number }, baseBox: Box): Box {
+    const baseActorId = String(baseBox?.meta?.hostedActorId || baseBox?.meta?.actorId || '');
+    const candidates = boxes.filter((candidate) => {
+        if (!Array.isArray(candidate?.lines) || candidate.lines.length === 0) return false;
+        const candidateActorId = String(candidate?.meta?.hostedActorId || candidate?.meta?.actorId || '');
+        if (baseActorId && candidateActorId && candidateActorId !== baseActorId) return false;
+        return hitTestRectContains(hitTestBoxRect(candidate), point);
+    });
+    return candidates
+        .map((candidate, index) => ({ candidate, index, score: scoreTextBoxForHit(candidate, point) }))
+        .sort((left, right) => left.score - right.score || right.index - left.index)[0]?.candidate
+        ?? baseBox;
+}
+
 class WorldSimulation {
     private pages: ReturnType<LayoutProcessor['simulate']> = [];
     private lastInitialLayoutResult: InitialLayoutResult | null = null;
@@ -360,29 +446,39 @@ class WorldSimulation {
             if (rect.w <= 0 || rect.h <= 0) continue;
             if (point.x < rect.x || point.x > rect.x + rect.w || point.y < rect.y || point.y > rect.y + rect.h) continue;
 
-            const actorId = String(box?.meta?.actorId || '');
-            const sourceId = String(box?.meta?.sourceId || '');
-            const hostActorId = String(box?.meta?.hostActorId || '');
+            const resolvedBox = resolveBestOverlappingTextHitBox(boxes, point, box);
+            const resolvedRect = hitTestBoxRect(resolvedBox);
+            const actorId = String(resolvedBox?.meta?.actorId || '');
+            const sourceId = String(resolvedBox?.meta?.sourceId || '');
+            const hostActorId = String(resolvedBox?.meta?.hostActorId || '');
             const directActor = this.findActorById(actorId);
             const hostActor = this.findActorById(hostActorId);
             const hitInput = {
                 pageIndex,
                 pagePoint: point,
-                boxPoint: { x: point.x - rect.x, y: point.y - rect.y },
-                box
+                boxPoint: { x: point.x - resolvedRect.x, y: point.y - resolvedRect.y },
+                box: resolvedBox
             };
             const packagerHit = hostActor?.hitTestPoint?.(hitInput)
                 ?? directActor?.hitTestPoint?.(hitInput)
                 ?? null;
+            const resolvedPackagerHit = packagerHit
+                && Array.isArray(resolvedBox?.lines)
+                && sourceId
+                && String((packagerHit as { sourceId?: unknown }).sourceId || '')
+                && String((packagerHit as { sourceId?: unknown }).sourceId || '') !== sourceId
+                && !(packagerHit as { tableCell?: unknown }).tableCell
+                ? null
+                : packagerHit;
             return {
                 kind: 'box',
                 pageIndex,
                 point,
-                box: buildWorldSimulationHitBox(box, rect),
+                box: buildWorldSimulationHitBox(resolvedBox, resolvedRect),
                 actorId: actorId || undefined,
                 sourceId: sourceId || undefined,
-                packagerHit,
-                reason: (hostActor || directActor) && !packagerHit ? 'actor-did-not-answer' : undefined
+                packagerHit: resolvedPackagerHit,
+                reason: (hostActor || directActor) && !resolvedPackagerHit ? 'actor-did-not-answer' : undefined
             };
         }
 
@@ -645,16 +741,37 @@ function computeRuntimeReplayPageChanges(
 
 function isContentOnlyGeometryMismatch(error: unknown): boolean {
     const message = error instanceof Error ? error.message : String(error || '');
-    return /^\[LayoutSession\] content-only actor ".+" changed box (width|height)\.$/.test(message);
+    return /^\[LayoutSession\] content-only actor ".+" changed box (width|height)\.$/.test(message)
+        || /^\[LayoutSession\] content-only actor ".+" changed box count \(\d+ -> \d+\)\.$/.test(message);
 }
 
 function findRuntimeElementPathBySourceId(elements: readonly Element[], sourceId: string): { element: Element; ancestors: Element[] } | null {
     const normalized = LayoutUtils.normalizeAuthorSourceId(sourceId) || sourceId;
+    const resolveGeneratedTableCellPath = (element: Element, ancestors: Element[], elementSourceId: string): { element: Element; ancestors: Element[] } | null => {
+        const escapedTableSourceId = elementSourceId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const match = new RegExp(`^${escapedTableSourceId}:r(\\d+):c(\\d+):cell$`).exec(normalized);
+        if (!match) return null;
+        const rowIndex = Number(match[1]);
+        const colStart = Number(match[2]);
+        if (!Number.isFinite(rowIndex) || !Number.isFinite(colStart)) return null;
+        const normalizedTable = normalizeTableElement(element);
+        const row = normalizedTable.rows.find((candidate) => candidate.rowIndex === rowIndex);
+        const cell = row?.cells.find((candidate) => candidate.colStart === colStart);
+        if (!row || !cell?.source) return null;
+        const nextAncestors = row.rowElement && row.rowElement !== element
+            ? [...ancestors, element, row.rowElement]
+            : [...ancestors, element];
+        return { element: cell.source, ancestors: nextAncestors };
+    };
     const visit = (element: Element | null | undefined, ancestors: Element[]): { element: Element; ancestors: Element[] } | null => {
         if (!element) return null;
         const elementSourceId = LayoutUtils.normalizeAuthorSourceId(element.properties?.sourceId) || String(element.properties?.sourceId || '');
         if (elementSourceId && (elementSourceId === sourceId || elementSourceId === normalized)) {
             return { element, ancestors };
+        }
+        if (elementSourceId && String(element.type || '').trim().toLowerCase() === 'table') {
+            const generatedTableCell = resolveGeneratedTableCellPath(element, ancestors, elementSourceId);
+            if (generatedTableCell) return generatedTableCell;
         }
         for (const child of element.children || []) {
             const found = visit(child, [...ancestors, element]);
@@ -683,6 +800,15 @@ function clearRuntimeMaterializationState(element: Element): void {
 
 function readRuntimeBoxSourceId(box: any): string {
     return String(box?.meta?.sourceId || box?.properties?.sourceId || box?.sourceId || '').trim();
+}
+
+function runtimeTargetBelongsToActor(sourceId: string, actor: RuntimeActor): boolean {
+    const actorSourceId = String(actor?.sourceId || '').trim();
+    if (!sourceId || !actorSourceId) return false;
+    const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(sourceId) || sourceId;
+    const normalizedActorSourceId = LayoutUtils.normalizeAuthorSourceId(actorSourceId) || actorSourceId;
+    return normalizedSourceId === normalizedActorSourceId
+        || normalizedSourceId.startsWith(`${normalizedActorSourceId}:`);
 }
 
 function resolveRuntimeSourceFrontierFromPages(pages: readonly any[], sourceId: string): NonNullable<RuntimeIntentResult['update']>['replayFrontier'] {
@@ -1129,6 +1255,16 @@ export class LayoutEngine extends LayoutProcessor {
         elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent = {}
     ): RuntimeIntentResult {
+        const formatting = normalizeRuntimeFormattingPatch(intent.patch || {});
+        const target = this.resolveRuntimeFormattingTarget(intent.target || {});
+        if (Object.keys(formatting).length && isRuntimeRangeTarget(intent.target || {}) && target.sourceId) {
+            const actor = this.resolveRuntimeFormattingActor(this.getCurrentLayoutSession(), intent.target || {});
+            const sourceBackedResult = this.applySourceBackedRuntimeFormattingIntent(elements, {
+                ...intent,
+                kind: 'formatting'
+            }, target, formatting, actor);
+            if (sourceBackedResult) return sourceBackedResult;
+        }
         const response = this.sendProtocolRequest('layout.applyRuntimeFormatting', {
             elements,
             intent: {
@@ -1189,13 +1325,28 @@ export class LayoutEngine extends LayoutProcessor {
         const actors = collectRuntimeFormattingActors(candidate.getRegisteredActors());
         if (actorId) {
             const exact = actors.find((actor) => actor?.actorId === actorId);
-            if (exact && (!sourceId || exact.sourceId === sourceId || exact.sourceId === normalized)) return exact;
+            if (exact && (!sourceId || exact.sourceId === sourceId || exact.sourceId === normalized || runtimeTargetBelongsToActor(sourceId, exact))) return exact;
         }
         return actors.find((actor) => sourceId && (actor?.sourceId === sourceId || actor?.sourceId === normalized)) ?? null;
     }
 
     private getRuntimeFormattingElement(actor: RuntimeActor | null): Element | null {
         return actor?.flowBox?._sourceElement || actor?.element || null;
+    }
+
+    private resolveRuntimeFormattingSourcePathForActor(
+        actor: RuntimeActor | null,
+        target: ReturnType<LayoutEngine['resolveRuntimeFormattingTarget']>
+    ): PackagerRuntimeSourcePath | null {
+        if (!actor || !target.sourceId || typeof actor.resolveRuntimeFormattingSourcePath !== 'function') {
+            return null;
+        }
+        const resolved = actor.resolveRuntimeFormattingSourcePath(target);
+        if (!resolved?.element) return null;
+        return {
+            element: resolved.element,
+            ancestors: Array.isArray(resolved.ancestors) ? resolved.ancestors : []
+        };
     }
 
     private buildRuntimeFormattingContext(session: unknown, pageIndex = 0): Record<string, unknown> {
@@ -1354,17 +1505,22 @@ export class LayoutEngine extends LayoutProcessor {
         _elements: Parameters<LayoutProcessor['simulate']>[0],
         intent: RuntimeIntent,
         target: ReturnType<LayoutEngine['resolveRuntimeFormattingTarget']>,
-        formatting: Record<string, unknown>
+        formatting: Record<string, unknown>,
+        actor?: RuntimeActor | null
     ): RuntimeIntentResult | null {
-        if (!target.sourceId || isRuntimeRangeTarget(target)) return null;
-        const sourcePath = findRuntimeElementPathBySourceId(_elements as Element[], target.sourceId);
+        if (!target.sourceId) return null;
+        const sourcePath = findRuntimeElementPathBySourceId(_elements as Element[], target.sourceId)
+            ?? this.resolveRuntimeFormattingSourcePathForActor(actor ?? null, target);
         if (!sourcePath) return null;
         const sourceElement = sourcePath.element;
         const previousSnapshot = cloneRuntimeElementSourceSnapshot(sourceElement);
         const previousStyle = sourceElement.properties && typeof sourceElement.properties.style === 'object' && sourceElement.properties.style
             ? { ...sourceElement.properties.style }
             : {};
-        const changed = Object.entries(formatting).some(([key, value]) => previousStyle[key] !== value);
+        const rangeTarget = isRuntimeRangeTarget(target);
+        const changed = rangeTarget
+            ? applyRuntimeRangeFormattingPatch(sourceElement, formatting, target)
+            : Object.entries(formatting).some(([key, value]) => previousStyle[key] !== value);
         if (!changed) {
             return {
                 changed: false,
@@ -1376,13 +1532,15 @@ export class LayoutEngine extends LayoutProcessor {
         const normalizedSourceId = LayoutUtils.normalizeAuthorSourceId(target.sourceId) || target.sourceId;
         const previousPages = this.getLastPrintPipelineSnapshot().pages as any[];
         const affectedFrontier = resolveRuntimeSourceFrontierFromPages(previousPages, target.sourceId);
-        sourceElement.properties = {
-            ...(sourceElement.properties || {}),
-            style: {
-                ...previousStyle,
-                ...formatting
-            }
-        };
+        if (!rangeTarget) {
+            sourceElement.properties = {
+                ...(sourceElement.properties || {}),
+                style: {
+                    ...previousStyle,
+                    ...formatting
+                }
+            };
+        }
         for (const element of [...sourcePath.ancestors, sourceElement]) {
             clearRuntimeMaterializationState(element);
         }
@@ -1610,8 +1768,12 @@ export class LayoutEngine extends LayoutProcessor {
         const element = this.getRuntimeFormattingElement(actor);
         const target = this.resolveRuntimeFormattingTarget(intent.target || {});
         const rangeTarget = isRuntimeRangeTarget(intent.target || {});
+        if (rangeTarget && target.sourceId) {
+            const sourceBackedResult = this.applySourceBackedRuntimeFormattingIntent(_elements, intent, target, formatting, actor);
+            if (sourceBackedResult) return sourceBackedResult;
+        }
         if (!session || !actor || !element) {
-            const sourceBackedResult = this.applySourceBackedRuntimeFormattingIntent(_elements, intent, target, formatting);
+            const sourceBackedResult = this.applySourceBackedRuntimeFormattingIntent(_elements, intent, target, formatting, actor);
             if (sourceBackedResult) return sourceBackedResult;
             return {
                 changed: false,

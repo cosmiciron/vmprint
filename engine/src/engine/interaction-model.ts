@@ -162,7 +162,7 @@ const sortUniqueNumbers = (values: number[]): number[] => Array.from(new Set(val
 const clamp = (value: number, min: number, max: number): number => Math.max(min, Math.min(max, value));
 
 const isTextSelectableBox = (box: Box): boolean => {
-    const sourceId = String(box.meta?.sourceId || '');
+    const sourceId = resolveInteractionSourceId(box);
     if (!sourceId) return false;
     return (
         (Array.isArray(box.lines) && box.lines.length > 0)
@@ -172,7 +172,7 @@ const isTextSelectableBox = (box: Box): boolean => {
 };
 
 const isInteractableBox = (box: Box): boolean => {
-    const sourceId = String(box.meta?.sourceId || '');
+    const sourceId = resolveInteractionSourceId(box);
     if (!sourceId) return false;
     return (
         isTextSelectableBox(box)
@@ -181,6 +181,12 @@ const isInteractableBox = (box: Box): boolean => {
         || box.type === 'field-actor'
         || box.type === 'box'
     );
+};
+
+const resolveInteractionSourceId = (box: Box): string => {
+    const properties = box.properties || {};
+    const meta = (box.meta || {}) as BoxMeta & { tableCellSourceId?: unknown };
+    return String(properties._tableCellSourceId || meta.tableCellSourceId || meta.sourceId || '').trim();
 };
 
 const buildTargetId = (meta: BoxMeta | undefined, pageIndex: number): string => {
@@ -470,10 +476,11 @@ const buildInteractionTarget = (
     });
 
     const properties = box.properties || {};
+    const sourceId = resolveInteractionSourceId(box);
     return {
         targetId: buildTargetId(box.meta, pageIndex),
         pageIndex,
-        sourceId: String(box.meta?.sourceId || ''),
+        sourceId,
         engineKey: String(box.meta?.engineKey || ''),
         sourceType: String(box.meta?.sourceType || ''),
         semanticRole: typeof box.meta?.semanticRole === 'string' ? box.meta.semanticRole : undefined,

@@ -58,6 +58,11 @@ export function buildRuntimeIntentTopic(sourceId: unknown): string {
     return normalized ? `${RUNTIME_INTENT_TOPIC}:${normalized}` : RUNTIME_INTENT_TOPIC;
 }
 
+function runtimeIntentTargetBelongsToActor(targetSourceId: string, actorSourceId: string): boolean {
+    if (!targetSourceId || !actorSourceId) return false;
+    return targetSourceId === actorSourceId || targetSourceId.startsWith(`${actorSourceId}:`);
+}
+
 export function isRuntimeRangeTarget(target: RuntimeFormattingTarget | Record<string, unknown> = {}): boolean {
     const start = Number(target.sourceStart);
     const end = Number(target.sourceEnd);
@@ -265,11 +270,14 @@ export function applyRuntimeRangeFormattingPatch(
 ): boolean {
     const start = Math.max(0, Number(target.sourceStart));
     const end = Math.max(start, Number(target.sourceEnd));
-    const sourceParts = Array.isArray(sourceElement.children) && sourceElement.children.length
-        ? sourceElement.children
-        : typeof sourceElement.content === 'string' && sourceElement.content.length
+    const sourceParts = [
+        ...(typeof sourceElement.content === 'string' && sourceElement.content.length
             ? [{ type: 'text', content: sourceElement.content }]
-            : [];
+            : []),
+        ...(Array.isArray(sourceElement.children) && sourceElement.children.length
+            ? sourceElement.children
+            : [])
+    ];
     if (!sourceParts.length) return false;
 
     const nextChildren: any[] = [];
@@ -325,7 +333,7 @@ export function readLatestRuntimeFormattingIntentSignal(
             const targetActorId = String(target.actorId || '').trim();
             const targetSourceId = normalizeRuntimeIntentSourceId(target.sourceId || target.containerKey || target.boxTargetId);
             if (targetActorId && targetActorId !== actor?.actorId) return false;
-            if (targetSourceId && targetSourceId !== actorSourceId) return false;
+            if (targetSourceId && !runtimeIntentTargetBelongsToActor(targetSourceId, actorSourceId)) return false;
             return targetActorId || targetSourceId;
         })
         .sort((a, b) => Number(b.sequence || 0) - Number(a.sequence || 0))[0] ?? null;
@@ -403,7 +411,9 @@ export function applyRuntimeFormattingIntentToSourceElement(options: {
         const nextGeometrySignature = getGeometrySignature?.();
         const geometryChanged = classifiedGeometry
             && (
-                previousGeometrySignature === undefined
+                isRuntimeRangeTarget(target)
+                || forceRangeGeometry
+                || previousGeometrySignature === undefined
                 || nextGeometrySignature === undefined
                 || JSON.stringify(previousGeometrySignature) !== JSON.stringify(nextGeometrySignature)
             );
@@ -453,7 +463,9 @@ export function applyRuntimeFormattingIntentToSourceElement(options: {
     const nextGeometrySignature = getGeometrySignature?.();
     const geometryChanged = classifiedGeometry
         && (
-            previousGeometrySignature === undefined
+            rangeTarget
+            || forceRangeGeometry
+            || previousGeometrySignature === undefined
             || nextGeometrySignature === undefined
             || JSON.stringify(previousGeometrySignature) !== JSON.stringify(nextGeometrySignature)
         );

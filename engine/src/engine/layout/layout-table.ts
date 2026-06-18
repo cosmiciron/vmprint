@@ -794,6 +794,17 @@ function buildTableCellBorderStyle(
     };
 }
 
+function resolveTableCellSourceId(cell: TableCellMaterialized, tableSourceId: string, rowIndex: number, colStart: number): string {
+    const rawCellSourceId = cell.source?.properties?.sourceId;
+    const generatedCellSourceId = `${tableSourceId}:r${rowIndex}:c${colStart}:cell`;
+    const normalizedCellSourceId = LayoutUtils.normalizeAuthorSourceId(rawCellSourceId) || generatedCellSourceId;
+    cell.properties = {
+        ...(cell.properties || {}),
+        sourceId: normalizedCellSourceId
+    };
+    return normalizedCellSourceId;
+}
+
 export function positionSpatialGridFlowBoxes(
     unit: FlowBox,
     x: number,
@@ -876,10 +887,11 @@ export function positionSpatialGridFlowBoxes(
                 colSpan,
                 resolved.columnCount
             );
-            const rawCellSourceId = cell.source?.properties?.sourceId;
-            const normalizedCellSourceId = LayoutUtils.normalizeAuthorSourceId(rawCellSourceId) || unit.meta.sourceId;
+            const explicitCellSourceId = LayoutUtils.normalizeAuthorSourceId(cell.source?.properties?.sourceId);
+            const normalizedCellSourceId = resolveTableCellSourceId(cell, unit.meta.sourceId, sourceRowIndex, colStart);
             const cellMeta: any = {
-                sourceId: normalizedCellSourceId,
+                sourceId: explicitCellSourceId || unit.meta.sourceId,
+                tableCellSourceId: normalizedCellSourceId,
                 engineKey: `${unit.meta.engineKey}:r${sourceRowIndex}:c${colStart}:cs${colSpan}:rs${effectiveRowSpan}:i${cellIndex}`,
                 sourceType: 'table_cell',
                 semanticRole: String(cell.source?.properties?.semanticRole || ''),
@@ -930,6 +942,7 @@ export function positionSpatialGridFlowBoxes(
                     ...(Number.isFinite(unit.properties?._tableViewportHeight)
                         ? { _tableViewportHeight: Number(unit.properties?._tableViewportHeight) }
                         : {}),
+                    _tableCellSourceId: normalizedCellSourceId,
                     _tableColIndex: colStart,
                     _tableColStart: colStart,
                     _tableColSpan: colSpan,

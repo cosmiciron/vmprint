@@ -166,10 +166,20 @@ function createContainedOverflowContinuationElement(
         };
     }
 
+    const beforeTrimLength = anyProcessor.getElementText(continuation).length;
     const trimmed = anyProcessor.trimLeadingContinuationWhitespace(continuation) as Element;
+    const trimDelta = Math.max(
+        0,
+        beforeTrimLength - anyProcessor.getElementText(trimmed).length
+    );
+    const sourceSliceStart = Math.max(
+        0,
+        Number(element.properties?._sourceSliceStart || 0) + consumedChars + trimDelta
+    );
     const properties = { ...(trimmed.properties || {}) } as Record<string, any>;
     delete properties.space;
     delete properties.spatialField;
+    properties._sourceSliceStart = sourceSliceStart;
     properties.style = continuationStyle;
     return { ...trimmed, properties };
 }

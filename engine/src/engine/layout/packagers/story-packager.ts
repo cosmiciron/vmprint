@@ -192,6 +192,10 @@ type StoryActorEntry = NormalizedStoryChild & {
     actor: PackagerUnit;
 };
 
+function cloneStoryRuntimeValue<T>(value: T): T {
+    return value === undefined ? value : JSON.parse(JSON.stringify(value));
+}
+
 // ---------------------------------------------------------------------------
 // FrozenStoryPackager – holds pre-split partA boxes
 // ---------------------------------------------------------------------------
@@ -540,7 +544,18 @@ export class StoryPackager implements PackagerUnit {
     }
 
     refreshHostedRuntimeActor(targetActor: PackagerUnit): boolean {
-        if (this.findHostedActorIndex(targetActor) < 0) return false;
+        const targetIndex = this.findHostedActorIndex(targetActor);
+        if (targetIndex < 0) return false;
+        const entry = this.storyActorEntries[targetIndex];
+        const sourceElement = (targetActor as unknown as { flowBox?: { _sourceElement?: Element }; element?: Element }).flowBox?._sourceElement
+            || (targetActor as unknown as { element?: Element }).element
+            || entry?.element;
+        if (sourceElement) {
+            const children = [...(this.storyElement.children ?? [])];
+            children[targetIndex] = cloneStoryRuntimeValue(sourceElement);
+            this.storyElement.children = children;
+            this.refreshStoryActorEntries();
+        }
         this.invalidateCachedStoryLayout();
         return true;
     }
@@ -2571,18 +2586,14 @@ function sameViewportSnapshot(
         && left.viewportHeight === right.viewportHeight;
 }
 
-function collectDeferredStoryAbsoluteChildren(children: Element[], cutoffChildIndex: number): Element[] {
-    if (!Number.isFinite(cutoffChildIndex) || cutoffChildIndex <= 0) {
-        return [];
-    }
-    const deferred: Element[] = [];
-    for (let i = 0; i < Math.min(children.length, cutoffChildIndex); i++) {
-        const child = children[i];
-        const layout = child.placement as StoryLayoutDirective | undefined;
-        if (layout?.mode !== 'story-absolute') continue;
-        deferred.push(child);
-    }
-    return deferred;
+function cloneStoryContinuationChild(child: Element, originalChildIndex: number): Element {
+    return {
+        ...child,
+        properties: {
+            ...(child.properties || {}),
+            _storyOriginalChildIndex: Math.max(0, Math.floor(originalChildIndex))
+        }
+    };
 }
 
 function buildStoryContinuationChildren(
@@ -2591,14 +2602,17 @@ function buildStoryContinuationChildren(
     continuationElement: Element | null
 ): Element[] {
     const result: Element[] = [];
-    for (const deferredAbsolute of collectDeferredStoryAbsoluteChildren(children, cutoffChildIndex)) {
-        result.push(deferredAbsolute);
+    for (let i = 0; i < Math.min(children.length, Math.max(0, cutoffChildIndex)); i++) {
+        const child = children[i];
+        const layout = child.placement as StoryLayoutDirective | undefined;
+        if (layout?.mode !== 'story-absolute') continue;
+        result.push(cloneStoryContinuationChild(child, i));
     }
     if (continuationElement) {
-        result.push(continuationElement);
+        result.push(cloneStoryContinuationChild(continuationElement, Math.max(0, cutoffChildIndex - 1)));
     }
     for (let i = Math.max(0, cutoffChildIndex); i < children.length; i++) {
-        result.push(children[i]);
+        result.push(cloneStoryContinuationChild(children[i], i));
     }
     return result;
 }

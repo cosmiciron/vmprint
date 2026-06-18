@@ -36,6 +36,10 @@ type ElementShaper = {
     shapeNormalizedFlowBlock(block: any): FlowBox;
 };
 
+function cloneListRuntimeValue<T>(value: T): T {
+    return value === undefined ? value : JSON.parse(JSON.stringify(value));
+}
+
 type PreparedListItem = {
     marker: FlowBoxPackager | null;
     markerBoxes?: Box[];
@@ -85,6 +89,65 @@ function isBlockListItemChild(element: Element | undefined): boolean {
         return !!element.placement || element.properties?.display === 'block';
     }
     return BLOCK_CHILD_TYPES.has(type);
+}
+
+function resolveElementSourceId(element: Element | undefined): string {
+    return String(element?.properties?.sourceId || '').trim();
+}
+
+function mergeHostedLeadListItem(item: Element, sourceElement: Element, sourceChildren: Element[] | null): Element {
+    const itemStyle = item.properties?.style && typeof item.properties.style === 'object'
+        ? { ...item.properties.style }
+        : {};
+    const sourceProperties = sourceElement.properties && typeof sourceElement.properties === 'object'
+        ? cloneListRuntimeValue(sourceElement.properties)
+        : {};
+    const sourceStyle = sourceElement.properties?.style && typeof sourceElement.properties.style === 'object'
+        ? { ...sourceElement.properties.style }
+        : {};
+    const blockChildren = Array.isArray(item.children)
+        ? item.children.filter(isBlockListItemChild).map((child) => cloneListRuntimeValue(child))
+        : [];
+    const nextItem: Element = {
+        ...item,
+        content: String(sourceElement.content || ''),
+        properties: {
+            ...(item.properties || {}),
+            ...sourceProperties,
+            style: {
+                ...itemStyle,
+                ...sourceStyle
+            }
+        }
+    };
+    const inlineChildren = sourceChildren ? cloneListRuntimeValue(sourceChildren) : [];
+    const mergedChildren = [...inlineChildren, ...blockChildren];
+    if (mergedChildren.length > 0) {
+        nextItem.children = mergedChildren;
+    } else {
+        delete nextItem.children;
+    }
+    return nextItem;
+}
+
+function mergeHostedBlockListItemChild(item: Element, hostedElement: Element, fallbackElement: Element): Element {
+    const children = Array.isArray(item.children) ? [...item.children] : [];
+    const hostedSourceId = resolveElementSourceId(fallbackElement) || resolveElementSourceId(hostedElement);
+    const childIndex = children.findIndex((child) => {
+        const childSourceId = resolveElementSourceId(child);
+        if (hostedSourceId && childSourceId === hostedSourceId) return true;
+        return child === fallbackElement;
+    });
+    const nextChild = cloneListRuntimeValue(hostedElement);
+    if (childIndex >= 0) {
+        children[childIndex] = nextChild;
+    } else {
+        children.push(nextChild);
+    }
+    return {
+        ...item,
+        children
+    };
 }
 
 function toAlphaMarker(value: number, uppercase: boolean): string {
@@ -380,6 +443,56 @@ function hitTestListBox(input: PackagerHitTestInput, owner: ListHitOwner): Packa
     };
 }
 
+function distanceToListHitRange(value: number, start: number, end: number): number {
+    const lo = Math.min(start, end);
+    const hi = Math.max(start, end);
+    if (value < lo) return lo - value;
+    if (value > hi) return value - hi;
+    return 0;
+}
+
+function estimateListHitLineHeight(box: Box): number {
+    const style = box.style || {};
+    const fontSize = Number(style.fontSize || 12);
+    const lineHeight = Number(style.lineHeight || 1.2);
+    const lineYOffsets = Array.isArray(box.properties?._lineYOffsets)
+        ? box.properties._lineYOffsets.map((value) => Number(value || 0))
+        : [];
+    for (let index = 1; index < lineYOffsets.length; index += 1) {
+        const delta = lineYOffsets[index]! - lineYOffsets[index - 1]!;
+        if (Number.isFinite(delta) && delta > 0) return Math.max(delta, fontSize);
+    }
+    return Math.max(fontSize, fontSize * (Number.isFinite(lineHeight) ? lineHeight : 1.2));
+}
+
+function scoreListHitCandidate(box: Box, point: { x: number; y: number }): number {
+    const rect = {
+        x: Number(box.x || 0),
+        y: Number(box.y || 0),
+        w: Math.max(0, Number(box.w || 0)),
+        h: Math.max(0, Number(box.h || 0))
+    };
+    const lines = Array.isArray(box.lines) ? box.lines : [];
+    if (lines.length > 0) {
+        const lineOffsets = Array.isArray(box.properties?._lineOffsets) ? box.properties._lineOffsets : [];
+        const lineWidths = Array.isArray(box.properties?._lineWidths) ? box.properties._lineWidths : [];
+        const lineYOffsets = Array.isArray(box.properties?._lineYOffsets) ? box.properties._lineYOffsets : [];
+        const lineHeight = estimateListHitLineHeight(box);
+        let best = Number.POSITIVE_INFINITY;
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+            const lineX = rect.x + Number(lineOffsets[lineIndex] ?? 0);
+            const lineW = Math.max(0, Number(lineWidths[lineIndex] ?? rect.w));
+            const lineY = rect.y + Number(lineYOffsets[lineIndex] ?? lineIndex * lineHeight);
+            const yDistance = distanceToListHitRange(point.y, lineY, lineY + lineHeight);
+            const xDistance = distanceToListHitRange(point.x, lineX, lineX + lineW);
+            best = Math.min(best, yDistance * 1000 + xDistance);
+        }
+        return best;
+    }
+    return distanceToListHitRange(point.y, rect.y, rect.y + rect.h) * 1000
+        + distanceToListHitRange(point.x, rect.x, rect.x + rect.w);
+}
+
 function routeMarkerBoxesToListActor(boxes: Box[], owner: Pick<PackagerUnit, 'actorId'>): Box[] {
     return boxes.map((box) => ({
         ...box,
@@ -486,7 +599,7 @@ export class ListPackager implements PackagerUnit {
     private readonly listElement: Element;
     private readonly processor: LayoutProcessor;
     private readonly identityPath: number[];
-    private readonly normalizedList: NormalizedList;
+    private normalizedList: NormalizedList;
     private preparedItems: PreparedListItem[] = [];
     private lastAvailableWidth: number = -1;
     private preparedMode: PreparedListMode = 'none';
@@ -1180,7 +1293,38 @@ export class ListPackager implements PackagerUnit {
     }
 
     hitTestPoint(input: PackagerHitTestInput): PackagerHitTestResult | null {
-        return hitTestListBox(input, {
+        const candidates: Box[] = [];
+        for (const item of this.preparedItems) {
+            const markerBoxes = item.markerBoxes ?? [];
+            const bodyBoxes = item.body.boxes;
+            const alignedMarkerBoxes = item.markerBoxes ? markerBoxes : alignMarkerBoxesToBodyBaseline(markerBoxes, bodyBoxes);
+            const routedMarkerBoxes = routeMarkerBoxesToListActor(alignedMarkerBoxes, this);
+            for (const box of [...routedMarkerBoxes, ...bodyBoxes]) {
+                candidates.push({
+                    ...box,
+                    y: Number(box.y || 0) + item.y
+                });
+            }
+        }
+        const point = {
+            x: Number(input.pagePoint?.x ?? 0),
+            y: Number(input.pagePoint?.y ?? 0)
+        };
+        const best = candidates
+            .filter((box) => resolveListHitContext(box))
+            .map((box) => ({ box, score: scoreListHitCandidate(box, point) }))
+            .sort((a, b) => a.score - b.score)[0]?.box;
+        const resolvedInput = best
+            ? {
+                ...input,
+                box: best,
+                boxPoint: {
+                    x: point.x - Number(best.x || 0),
+                    y: point.y - Number(best.y || 0)
+                }
+            }
+            : input;
+        return hitTestListBox(resolvedInput, {
             actorId: this.actorId,
             sourceId: this.sourceId,
             layout: (this.processor as any).config?.layout
@@ -1201,27 +1345,20 @@ export class ListPackager implements PackagerUnit {
         const sourceElement = (found.entry.actor as unknown as { flowBox?: { _sourceElement?: Element }; element?: Element }).flowBox?._sourceElement
             || (found.entry.actor as unknown as { element?: Element }).element
             || found.entry.element;
-        const sourceText = String(sourceElement?.content || '');
-        const sourceStyle = sourceElement?.properties?.style && typeof sourceElement.properties.style === 'object'
-            ? { ...sourceElement.properties.style }
-            : {};
+        if (!sourceElement) return false;
+        const sourceChildren = Array.isArray(sourceElement?.children)
+            ? cloneListRuntimeValue(sourceElement.children)
+            : null;
         const nextChildren = [...(this.listElement.children || [])];
         const item = { ...(nextChildren[found.itemIndex] || this.normalizedList.items[found.itemIndex]) };
-        const itemStyle = item.properties?.style && typeof item.properties.style === 'object'
-            ? { ...item.properties.style }
-            : {};
-        nextChildren[found.itemIndex] = {
-            ...item,
-            content: sourceText,
-            properties: {
-                ...(item.properties || {}),
-                style: {
-                    ...itemStyle,
-                    ...sourceStyle
-                }
-            }
-        };
+        const entryElement = found.entry.element;
+        const entryType = String(entryElement?.type || '').trim().toLowerCase();
+        const nextItem = entryType === 'list-item'
+            ? mergeHostedLeadListItem(item, sourceElement, sourceChildren)
+            : mergeHostedBlockListItemChild(item, sourceElement, entryElement);
+        nextChildren[found.itemIndex] = nextItem;
         this.listElement.children = nextChildren;
+        this.normalizedList = normalizeListElement(this.listElement);
         this.hostedBodyActorsByItem.delete(found.itemIndex);
         this.preparedItems = [];
         this.preparedMode = 'none';

@@ -78,6 +78,26 @@ export class SpatialCapabilityPackager implements PackagerUnit {
         return this.inner.getReshapeProfile();
     }
 
+    getCommittedSignalSubscriptions(): readonly string[] | null | undefined {
+        return this.inner.getCommittedSignalSubscriptions?.();
+    }
+
+    participatesInCommittedSignalObservation(): boolean {
+        return this.inner.participatesInCommittedSignalObservation?.() ?? true;
+    }
+
+    updateCommittedState(context: PackagerContext): ObservationResult | null | undefined {
+        return this.inner.updateCommittedState?.(context);
+    }
+
+    observeCommittedState(context: PackagerContext): ObservationResult | null | undefined {
+        return this.inner.observeCommittedState?.(context);
+    }
+
+    observeCommittedSignals(context: PackagerContext): ObservationResult | null | undefined {
+        return this.inner.observeCommittedSignals?.(context);
+    }
+
     emitBoxes(availableWidth: number, availableHeight: number, context: PackagerContext): Box[] {
         this.prepare(availableWidth, availableHeight, context);
         const movementState = this.movement.state;

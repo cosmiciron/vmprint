@@ -311,11 +311,28 @@ function buildHostedRegionFieldCarryoverEntry(
     };
 }
 
+function shouldPreserveHostedBoxSourceId(actor: PackagerUnit, box: Box): boolean {
+    const boxMeta = box.meta || {};
+    const boxSourceId = String(boxMeta.sourceId || '');
+    const actorSourceId = String(actor.sourceId || '');
+    if (!boxSourceId) return false;
+    if (String(boxMeta.actorId || '') === actor.actorId) return true;
+    if (box.properties?._listMarker === true || box.properties?._listItemIndex !== undefined) return true;
+    if (!actorSourceId) return false;
+    return boxSourceId === actorSourceId || boxSourceId.startsWith(`${actorSourceId}:`);
+}
+
 function annotateHostedActorBoxes(actor: PackagerUnit, boxes: Box[]): Box[] {
     return boxes.map((box) => ({
         ...box,
         meta: box.meta
-            ? { ...box.meta, actorId: actor.actorId, sourceId: box.meta.sourceId ?? actor.sourceId }
+            ? {
+                ...box.meta,
+                actorId: actor.actorId,
+                sourceId: shouldPreserveHostedBoxSourceId(actor, box)
+                    ? box.meta.sourceId
+                    : actor.sourceId
+            }
             : {
                 actorId: actor.actorId,
                 sourceId: actor.sourceId,
