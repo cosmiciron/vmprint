@@ -54,11 +54,14 @@ type CliOptions = {
 const OVERLAY_EXTENSIONS = ['.mjs', '.js', '.cjs', '.ts'] as const;
 
 function resolveOutputPath(options: CliOptions): string {
-    const outputPath: string = options.output ? String(options.output) : '';
-    if (outputPath) {
-        const ext = path.extname(outputPath).toLowerCase();
-        if (ext === '.pdf') return outputPath;
+    if (options.output) {
+        const ext = path.extname(options.output).toLowerCase();
+        if (ext === '.pdf') return options.output;
         throw new Error(`Unsupported output extension "${ext || '(none)'}". Use .pdf.`);
+    }
+    if (options.input) {
+        const parsed = path.parse(options.input);
+        return path.format({ ...parsed, base: undefined, ext: '.pdf' });
     }
     return 'output.pdf';
 }
@@ -268,6 +271,6 @@ async function run() {
 }
 
 run().catch((error) => {
-    console.error('[vmprint] Failed:', error);
+    console.error(`[vmprint] Failed: ${error.message || error}`);
     process.exit(1);
 });
