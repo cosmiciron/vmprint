@@ -82,6 +82,15 @@ export const drawRichLineSegments = (
             currentX -= segWidth;
         }
         const drawX = currentX;
+        const inlineMarginLeft = Number(seg.style?.inlineMarginLeft || 0);
+        const inlineMarginRight = Number(seg.style?.inlineMarginRight || 0);
+        const textDrawX = drawX + (Number.isFinite(inlineMarginLeft) ? inlineMarginLeft : 0);
+        const textBoxWidth = Math.max(
+            0,
+            segWidth
+                - (Number.isFinite(inlineMarginLeft) ? inlineMarginLeft : 0)
+                - (Number.isFinite(inlineMarginRight) ? inlineMarginRight : 0)
+        );
 
         if (bg) {
             context.save();
@@ -156,14 +165,14 @@ export const drawRichLineSegments = (
                 fontId,
                 Number(size) || options.fontSize,
                 color,
-                drawX,
+                textDrawX,
                 finalY,
                 segAscender,
                 seg.shapedGlyphs as import('../../contracts').ContextShapedGlyph[]
             );
         } else {
-            const dX = drawX || 0;
-            const dW = options.lineWidthLimit || 0;
+            const dX = textDrawX || 0;
+            const dW = textBoxWidth || options.lineWidthLimit || 0;
             const dH = options.effectiveLineHeight || 0;
             // For RTL/Arabic segments: pass explicit OpenType shaping features so PDFKit forwards them
             // to fontkit.layout(), which applies Arabic contextual substitution (init/medi/fina/liga/curs).

@@ -3,7 +3,7 @@ import { Element, ElementType, TextSegment } from '../types';
 export const INLINE_OBJECT_CHAR = '\uFFFC';
 
 function isInlineImageElement(element: Element): boolean {
-    return element.type === 'image' && !!element.image;
+    return element.type === 'image';
 }
 
 function isInlineBoxElement(element: Element): boolean {
@@ -12,6 +12,78 @@ function isInlineBoxElement(element: Element): boolean {
 
 function isInlineObjectElement(element: Element): boolean {
     return isInlineImageElement(element) || isInlineBoxElement(element);
+}
+
+const INHERITABLE_RICH_STYLE_KEYS = new Set([
+    'fontFamily',
+    'fontSize',
+    'fontWeight',
+    'fontStyle',
+    'lineHeight',
+    'lineHeightPx',
+    'letterSpacing',
+    'textAlign',
+    'color',
+    'lang',
+    'direction',
+    'hyphenation',
+    'hyphenateCaps',
+    'hyphenMinWordLength',
+    'hyphenMinPrefix',
+    'hyphenMinSuffix',
+    'justifyEngine',
+    'justifyStrategy'
+]);
+
+function pickInheritableRichStyle(style: Record<string, any> | undefined): Record<string, any> {
+    const out: Record<string, any> = {};
+    if (!style) return out;
+    for (const key of INHERITABLE_RICH_STYLE_KEYS) {
+        if (style[key] !== undefined) out[key] = style[key];
+    }
+    return out;
+}
+
+function readInlineMargin(value: unknown): number {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : 0;
+}
+
+function applyWrapperInlineMargins(segments: TextSegment[], style: Record<string, any>): TextSegment[] {
+    if (segments.length === 0) return segments;
+    const marginLeft = readInlineMargin(style.inlineMarginLeft);
+    const marginRight = readInlineMargin(style.inlineMarginRight);
+    if (marginLeft === 0 && marginRight === 0) return segments;
+
+    const next = segments.slice();
+    if (marginLeft !== 0) {
+        const firstIndex = next.findIndex((segment) => segment.text !== '');
+        if (firstIndex >= 0) {
+            const first = next[firstIndex];
+            next[firstIndex] = {
+                ...first,
+                style: {
+                    ...(first.style || {}),
+                    inlineMarginLeft: readInlineMargin(first.style?.inlineMarginLeft) + marginLeft
+                }
+            };
+        }
+    }
+    if (marginRight !== 0) {
+        for (let index = next.length - 1; index >= 0; index--) {
+            const last = next[index];
+            if (last.text === '') continue;
+            next[index] = {
+                ...last,
+                style: {
+                    ...(last.style || {}),
+                    inlineMarginRight: readInlineMargin(last.style?.inlineMarginRight) + marginRight
+                }
+            };
+            break;
+        }
+    }
+    return next;
 }
 
 export function getElementText(element: Element): string {
@@ -100,13 +172,13 @@ function getRichSegmentsAtOffset(
     // Applying the global `text` style on every text node would override heading
     // and emphasis typography back to body defaults.
     const explicitlyDefinedStyle = isInheritedTextLeaf ? {} : resolvedTypeStyle;
-    const currentStyle = { ...inheritedStyle, ...explicitlyDefinedStyle, ...(element.properties?.style || {}) };
+    const inheritedTextStyle = pickInheritableRichStyle(inheritedStyle);
+    const currentStyle = { ...inheritedTextStyle, ...explicitlyDefinedStyle, ...(element.properties?.style || {}) };
     const ownLinkTarget = typeof element.properties?.linkTarget === 'string' ? element.properties.linkTarget : undefined;
     const currentLinkTarget = ownLinkTarget || inheritedLinkTarget;
 
     if (isInlineImageElement(element)) {
         const imagePayload = element.image;
-        if (!imagePayload) return segments;
         const sourceStart = cursor.value;
         const sourceEnd = sourceStart + INLINE_OBJECT_CHAR.length;
         cursor.value = sourceEnd;
@@ -117,9 +189,13 @@ function getRichSegmentsAtOffset(
             style: currentStyle,
             fontFamily: currentStyle.fontFamily,
             ...(currentLinkTarget ? { linkTarget: currentLinkTarget } : {}),
-            inlineObject: {
+            inlineObject: imagePayload ? {
                 kind: 'image',
                 image: imagePayload
+            } : {
+                kind: 'box',
+                text: '',
+                replaced: true
             }
         });
         return segments;
@@ -161,9 +237,12 @@ function getRichSegmentsAtOffset(
     }
 
     if (element.children && element.children.length > 0) {
+        const childInheritedStyle = pickInheritableRichStyle(currentStyle);
+        const childSegments: TextSegment[] = [];
         for (const child of element.children) {
-            segments.push(...getRichSegmentsAtOffset(child, currentStyle, params, cursor, currentLinkTarget));
+            childSegments.push(...getRichSegmentsAtOffset(child, childInheritedStyle, params, cursor, currentLinkTarget));
         }
+        segments.push(...applyWrapperInlineMargins(childSegments, currentStyle));
     } else if (element.content !== undefined) {
         const text = params.transformContent(element.content, elementType);
         const sourceStart = cursor.value;

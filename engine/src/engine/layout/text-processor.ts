@@ -245,29 +245,41 @@ export class TextProcessor extends FontProcessor {
 
         if (inline.kind === 'image') {
             const parsed = parseEmbeddedImagePayloadCached(inline.image);
+            const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 0);
+            const paddingRight = LayoutUtils.validateUnit(style.paddingRight ?? style.padding ?? 0);
+            const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 0);
+            const paddingBottom = LayoutUtils.validateUnit(style.paddingBottom ?? style.padding ?? 0);
+            const borderLeft = LayoutUtils.validateUnit(style.borderLeftWidth ?? style.borderWidth ?? 0);
+            const borderRight = LayoutUtils.validateUnit(style.borderRightWidth ?? style.borderWidth ?? 0);
+            const borderTop = LayoutUtils.validateUnit(style.borderTopWidth ?? style.borderWidth ?? 0);
+            const borderBottom = LayoutUtils.validateUnit(style.borderBottomWidth ?? style.borderWidth ?? 0);
+            const horizontalInsets = paddingLeft + paddingRight + borderLeft + borderRight;
+            const verticalInsets = paddingTop + paddingBottom + borderTop + borderBottom;
             let contentWidth = style.width !== undefined ? LayoutUtils.validateUnit(style.width) : measurementFontSize;
             if (contentWidth <= 0) contentWidth = measurementFontSize;
             let contentHeight = style.height !== undefined
                 ? LayoutUtils.validateUnit(style.height)
                 : contentWidth * (parsed.intrinsicHeight / Math.max(1, parsed.intrinsicWidth));
             if (contentHeight <= 0) contentHeight = measurementFontSize;
+            const boxWidth = contentWidth + horizontalInsets;
+            const boxHeight = contentHeight + verticalInsets;
 
             const rawOpticalInsetTop = LayoutUtils.validateUnit(style.inlineOpticalInsetTop ?? 0);
             const rawOpticalInsetRight = LayoutUtils.validateUnit(style.inlineOpticalInsetRight ?? 0);
             const rawOpticalInsetBottom = LayoutUtils.validateUnit(style.inlineOpticalInsetBottom ?? 0);
             const rawOpticalInsetLeft = LayoutUtils.validateUnit(style.inlineOpticalInsetLeft ?? 0);
-            const opticalInsetTop = Math.max(0, Math.min(contentHeight, rawOpticalInsetTop));
-            const opticalInsetBottom = Math.max(0, Math.min(contentHeight - opticalInsetTop, rawOpticalInsetBottom));
-            const opticalInsetLeft = Math.max(0, Math.min(contentWidth, rawOpticalInsetLeft));
-            const opticalInsetRight = Math.max(0, Math.min(contentWidth - opticalInsetLeft, rawOpticalInsetRight));
-            const opticalHeight = Math.max(1, contentHeight - opticalInsetTop - opticalInsetBottom);
-            const opticalWidth = Math.max(1, contentWidth - opticalInsetLeft - opticalInsetRight);
+            const opticalInsetTop = Math.max(0, Math.min(boxHeight, rawOpticalInsetTop));
+            const opticalInsetBottom = Math.max(0, Math.min(boxHeight - opticalInsetTop, rawOpticalInsetBottom));
+            const opticalInsetLeft = Math.max(0, Math.min(boxWidth, rawOpticalInsetLeft));
+            const opticalInsetRight = Math.max(0, Math.min(boxWidth - opticalInsetLeft, rawOpticalInsetRight));
+            const opticalHeight = Math.max(1, boxHeight - opticalInsetTop - opticalInsetBottom);
+            const opticalWidth = Math.max(1, boxWidth - opticalInsetLeft - opticalInsetRight);
 
             const descentFromOpticalBottomPx = resolveDescentPx(opticalHeight);
             const descentPx = descentFromOpticalBottomPx + opticalInsetBottom;
-            const ascentUnits = (Math.max(0, contentHeight - descentPx) / Math.max(1, measurementFontSize)) * 1000;
+            const ascentUnits = (Math.max(0, boxHeight - descentPx) / Math.max(1, measurementFontSize)) * 1000;
             const descentUnits = (descentPx / Math.max(1, measurementFontSize)) * 1000;
-            const totalWidth = contentWidth + marginLeft + marginRight;
+            const totalWidth = boxWidth + marginLeft + marginRight;
 
             populateSegment.glyphs = [];
             populateSegment.width = totalWidth;
@@ -275,7 +287,7 @@ export class TextProcessor extends FontProcessor {
             populateSegment.descent = descentUnits;
             populateSegment.inlineMetrics = {
                 width: totalWidth,
-                height: contentHeight,
+                height: boxHeight,
                 contentWidth,
                 contentHeight,
                 opticalInsetTop,
@@ -293,23 +305,29 @@ export class TextProcessor extends FontProcessor {
             return totalWidth;
         }
 
-        const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 2);
-        const paddingRight = LayoutUtils.validateUnit(style.paddingRight ?? style.padding ?? 2);
-        const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 1);
-        const paddingBottom = LayoutUtils.validateUnit(style.paddingBottom ?? style.padding ?? 1);
+        const label = String(inline.text || '');
+        const isReplacedPlaceholder = inline.kind === 'box' && inline.replaced === true;
+        const defaultPaddingX = isReplacedPlaceholder ? 0 : 2;
+        const defaultPaddingY = isReplacedPlaceholder ? 0 : 1;
+        const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? defaultPaddingX);
+        const paddingRight = LayoutUtils.validateUnit(style.paddingRight ?? style.padding ?? defaultPaddingX);
+        const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? defaultPaddingY);
+        const paddingBottom = LayoutUtils.validateUnit(style.paddingBottom ?? style.padding ?? defaultPaddingY);
         const borderWidth = LayoutUtils.validateUnit(style.borderWidth ?? 0);
         const horizontalInsets = paddingLeft + paddingRight + (borderWidth * 2);
         const verticalInsets = paddingTop + paddingBottom + (borderWidth * 2);
-        const label = String(inline.text || '');
         const innerWidth = label
             ? this.measureText(label, measurementFont, measurementFontSize, 0)
-            : Math.max(0, measurementFontSize * 0.75);
+            : isReplacedPlaceholder ? 0 : Math.max(0, measurementFontSize * 0.75);
 
         let contentWidth = style.width !== undefined ? LayoutUtils.validateUnit(style.width) : (innerWidth + horizontalInsets);
-        if (contentWidth <= 0) contentWidth = Math.max(1, innerWidth + horizontalInsets);
+        if (isReplacedPlaceholder) contentWidth += horizontalInsets;
+        if (!isReplacedPlaceholder && contentWidth <= 0) contentWidth = Math.max(1, innerWidth + horizontalInsets);
+        if (isReplacedPlaceholder && contentWidth < 0) contentWidth = 0;
         let contentHeight = style.height !== undefined
             ? LayoutUtils.validateUnit(style.height)
             : (Math.max(measurementFontSize * 1.2, measurementFontSize + verticalInsets));
+        if (isReplacedPlaceholder) contentHeight += verticalInsets;
         if (contentHeight <= 0) contentHeight = Math.max(1, measurementFontSize);
 
         const descentPx = resolveDescentPx(contentHeight);
@@ -374,6 +392,7 @@ export class TextProcessor extends FontProcessor {
                 populateSegment.width = cached.width;
                 populateSegment.ascent = cached.ascent;
                 populateSegment.descent = cached.descent;
+                return this.applyTextSegmentInlineMargins(populateSegment, cached.width);
             }
             return cached.width;
         }
@@ -418,6 +437,7 @@ export class TextProcessor extends FontProcessor {
                 populateSegment.width = width;
                 populateSegment.ascent = ascent;
                 populateSegment.descent = descent;
+                return this.applyTextSegmentInlineMargins(populateSegment, width);
             }
 
             return width;
@@ -433,6 +453,31 @@ export class TextProcessor extends FontProcessor {
     private resolveSegmentLetterSpacing(segment: TextSegment, fallback: number = 0): number {
         const value = Number(segment?.style?.letterSpacing);
         return Number.isFinite(value) ? value : fallback;
+    }
+
+    private resolveSegmentInlineMargins(segment: TextSegment | undefined): { marginLeft: number; marginRight: number } {
+        const style = (segment?.style || {}) as Record<string, any>;
+        return {
+            marginLeft: LayoutUtils.validateUnit(style.inlineMarginLeft ?? 0),
+            marginRight: LayoutUtils.validateUnit(style.inlineMarginRight ?? 0)
+        };
+    }
+
+    private applyTextSegmentInlineMargins(segment: TextSegment | undefined, measuredWidth: number): number {
+        if (!segment || segment.inlineObject) return measuredWidth;
+        const { marginLeft, marginRight } = this.resolveSegmentInlineMargins(segment);
+        if (marginLeft === 0 && marginRight === 0) return measuredWidth;
+
+        if (Array.isArray(segment.glyphs) && marginLeft !== 0) {
+            segment.glyphs = segment.glyphs.map((glyph) => ({
+                ...glyph,
+                x: Number(glyph.x || 0) + marginLeft
+            }));
+        }
+
+        const marginBoxWidth = Math.max(0, measuredWidth + marginLeft + marginRight);
+        segment.width = marginBoxWidth;
+        return marginBoxWidth;
     }
 
     protected resolveLoadedFamilyFont(familyName: string, weight: number | string, style: string = 'normal'): any {

@@ -74,6 +74,7 @@ export function appendSegmentToLine(
         !!last &&
         last.fontFamily === nextSegment.fontFamily &&
         last.direction === nextSegment.direction &&
+        last.linkTarget === nextSegment.linkTarget &&
         areStylesEquivalent(last.style, nextSegment.style);
 
     if (!canMerge) {

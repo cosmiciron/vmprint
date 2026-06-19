@@ -153,7 +153,7 @@ export class LayoutUtils {
 
         const insets = this.getHorizontalInsets(style);
 
-        return Math.max(0, nominalWidth - insets);
+        return Math.max(0, this.clampBoxWidth(nominalWidth, style) - insets);
     }
 
 
@@ -163,13 +163,37 @@ export class LayoutUtils {
         const baseWidth = pageWidth - margins.left - margins.right;
 
         if (!style) return baseWidth;
+        let nominalWidth: number;
         if (style.width === undefined) {
             const marginLeft = this.validateUnit(style.marginLeft ?? 0);
             const marginRight = this.validateUnit(style.marginRight ?? 0);
-            return Math.max(0, baseWidth - marginLeft - marginRight);
+            nominalWidth = baseWidth - marginLeft - marginRight;
+        } else {
+            nominalWidth = this.validateUnit(style.width);
         }
 
-        return this.validateUnit(style.width);
+        return Math.max(0, this.clampBoxWidth(nominalWidth, style));
+    }
+
+    static clampBoxWidth(width: number, style?: any): number {
+        let next = Number.isFinite(width) ? width : 0;
+        if (!style) return next;
+        if (style.minWidth !== undefined) {
+            next = Math.max(next, Math.max(0, this.validateUnit(style.minWidth)));
+        }
+        if (style.maxWidth !== undefined) {
+            next = Math.min(next, Math.max(0, this.validateUnit(style.maxWidth)));
+        }
+        return next;
+    }
+
+    static clampBoxHeight(height: number, style?: any): number {
+        let next = Number.isFinite(height) ? height : 0;
+        if (!style) return next;
+        if (style.minHeight !== undefined) {
+            next = Math.max(next, Math.max(0, this.validateUnit(style.minHeight)));
+        }
+        return next;
     }
 
     static getHorizontalInsets(style: any): number {

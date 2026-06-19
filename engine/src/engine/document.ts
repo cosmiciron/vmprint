@@ -155,7 +155,10 @@ const STYLE_KEYS = new Set([
     'paddingLeft',
     'paddingRight',
     'width',
+    'minWidth',
+    'maxWidth',
     'height',
+    'minHeight',
     'zIndex',
     'color',
     'backgroundColor',
@@ -501,7 +504,10 @@ function validateStyleObject(style: unknown, path: string, documentPath: string)
     if (obj.paddingLeft !== undefined) assertFiniteNumberAt(obj.paddingLeft, `${path}.paddingLeft`, documentPath);
     if (obj.paddingRight !== undefined) assertFiniteNumberAt(obj.paddingRight, `${path}.paddingRight`, documentPath);
     if (obj.width !== undefined) assertFiniteNumberAt(obj.width, `${path}.width`, documentPath);
+    if (obj.minWidth !== undefined) assertFiniteNumberAt(obj.minWidth, `${path}.minWidth`, documentPath);
+    if (obj.maxWidth !== undefined) assertFiniteNumberAt(obj.maxWidth, `${path}.maxWidth`, documentPath);
     if (obj.height !== undefined) assertFiniteNumberAt(obj.height, `${path}.height`, documentPath);
+    if (obj.minHeight !== undefined) assertFiniteNumberAt(obj.minHeight, `${path}.minHeight`, documentPath);
     if (obj.marginLeft !== undefined) assertFiniteNumberAt(obj.marginLeft, `${path}.marginLeft`, documentPath);
     if (obj.marginRight !== undefined) assertFiniteNumberAt(obj.marginRight, `${path}.marginRight`, documentPath);
     if (obj.zIndex !== undefined) assertFiniteNumberAt(obj.zIndex, `${path}.zIndex`, documentPath);

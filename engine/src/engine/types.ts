@@ -87,6 +87,7 @@ export interface InlineImageSegment {
 export interface InlineBoxSegment {
     kind: 'box';
     text?: string;
+    replaced?: boolean;
 }
 
 export type InlineObjectSegment = InlineImageSegment | InlineBoxSegment;
@@ -555,7 +556,10 @@ export interface ElementStyle {
     paddingRight?: number;
 
     width?: number;
+    minWidth?: number;
+    maxWidth?: number;
     height?: number;
+    minHeight?: number;
     zIndex?: number;
 
     color?: string;

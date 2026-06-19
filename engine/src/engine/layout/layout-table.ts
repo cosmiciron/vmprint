@@ -87,15 +87,79 @@ function measureCellIntrinsicWidths(
 ): { minContent: number; maxContent: number } {
     const measurementFont = tableContext.resolveMeasurementFontForStyle(style);
     const letterSpacing = Number(style.letterSpacing || 0);
+    const insetsHorizontal = tableContext.getHorizontalInsets(style);
     const text = tableContext.getElementText(cell).replace(/\s+/g, ' ').trim();
-    if (!text) return { minContent: 0, maxContent: 0 };
+    let childMinContent = 0;
+    let childMaxContent = 0;
+    for (const child of cell.children || []) {
+        const measured = measureChildIntrinsicWidths(child, tableContext);
+        childMinContent = Math.max(childMinContent, measured.minContent);
+        childMaxContent = Math.max(childMaxContent, measured.maxContent);
+    }
+    if (!text) {
+        return {
+            minContent: childMinContent + insetsHorizontal,
+            maxContent: childMaxContent + insetsHorizontal
+        };
+    }
 
     const tokens = text.split(' ').filter((token) => token.length > 0);
-    const minContent = tokens.length > 0
+    const minTextWidth = tokens.length > 0
         ? tokens.reduce((max, token) => Math.max(max, tableContext.measureText(token, measurementFont, fontSize, letterSpacing)), 0)
         : tableContext.measureText(text, measurementFont, fontSize, letterSpacing);
-    const maxContent = tableContext.measureText(text, measurementFont, fontSize, letterSpacing);
+    const maxTextWidth = tableContext.measureText(text, measurementFont, fontSize, letterSpacing);
+    const minContent = Math.max(minTextWidth, childMinContent) + insetsHorizontal;
+    const maxContent = Math.max(maxTextWidth, childMaxContent) + insetsHorizontal;
     return { minContent, maxContent };
+}
+
+function measureChildIntrinsicWidths(
+    child: Element,
+    tableContext: SpatialGridLayoutContext
+): { minContent: number; maxContent: number } {
+    const style = tableContext.getStyle(child);
+    const margins = LayoutUtils.validateUnit(style.marginLeft ?? 0)
+        + LayoutUtils.validateUnit(style.marginRight ?? 0);
+    const explicitWidth = style.width !== undefined
+        ? Math.max(0, LayoutUtils.validateUnit(style.width))
+        : undefined;
+    const insetsHorizontal = tableContext.getHorizontalInsets(style);
+    let childMin = explicitWidth !== undefined ? explicitWidth : insetsHorizontal;
+    let childMax = explicitWidth !== undefined ? explicitWidth : insetsHorizontal;
+
+    if (child.image) {
+        const image = tableContext.resolveEmbeddedImage(child);
+        if (image) {
+            const imageWidth = explicitWidth !== undefined ? explicitWidth : image.intrinsicWidth + insetsHorizontal;
+            childMin = Math.max(childMin, imageWidth);
+            childMax = Math.max(childMax, imageWidth);
+        }
+    }
+
+    const text = tableContext.getElementText(child).replace(/\s+/g, ' ').trim();
+    if (text) {
+        const fontSize = Number(style.fontSize || tableContext.layoutFontSize);
+        const measurementFont = tableContext.resolveMeasurementFontForStyle(style);
+        const letterSpacing = Number(style.letterSpacing || 0);
+        const tokens = text.split(' ').filter((token) => token.length > 0);
+        const minTextWidth = tokens.length > 0
+            ? tokens.reduce((max, token) => Math.max(max, tableContext.measureText(token, measurementFont, fontSize, letterSpacing)), 0)
+            : tableContext.measureText(text, measurementFont, fontSize, letterSpacing);
+        const maxTextWidth = tableContext.measureText(text, measurementFont, fontSize, letterSpacing);
+        childMin = Math.max(childMin, minTextWidth + insetsHorizontal);
+        childMax = Math.max(childMax, maxTextWidth + insetsHorizontal);
+    }
+
+    for (const grandchild of child.children || []) {
+        const measured = measureChildIntrinsicWidths(grandchild, tableContext);
+        childMin = Math.max(childMin, measured.minContent);
+        childMax = Math.max(childMax, measured.maxContent);
+    }
+
+    return {
+        minContent: childMin + margins,
+        maxContent: childMax + margins
+    };
 }
 
 function getTableSpanWidth(columnWidths: number[], colStart: number, colSpan: number, columnGap: number): number {
@@ -166,7 +230,7 @@ function materializeTableCell(
         const imageHeight = contentWidth > 0
             ? (contentWidth * (image.intrinsicHeight / Math.max(1, image.intrinsicWidth)))
             : 0;
-        const measuredHeight = Math.max(insetsVertical, imageHeight + insetsVertical);
+        const measuredHeight = resolveTableCellMeasuredHeight(Math.max(insetsVertical, imageHeight + insetsVertical), mergedStyle);
         return {
             placement,
             source: cell,
@@ -211,7 +275,7 @@ function materializeTableCell(
                 (max, box) => Math.max(max, Math.max(0, Number(box.y || 0)) + Math.max(0, Number(box.h || 0))),
                 0
             );
-            const measuredHeight = Math.max(insetsVertical, maxBottom + insetsVertical);
+            const measuredHeight = resolveTableCellMeasuredHeight(Math.max(insetsVertical, maxBottom + insetsVertical), mergedStyle);
             return {
                 placement,
                 source: cell,
@@ -226,23 +290,26 @@ function materializeTableCell(
     if (hasBlockChildren && typeof tableContext.emitBlockChildBoxes === 'function') {
         const contentWidth = Math.max(0, width - insetsHorizontal);
         const children = Array.isArray(cell.children) ? cell.children : [];
-        const blockChildren = text.trim().length > 0
+        const directInlineChildren = children.filter((child) => {
+            const type = String(child?.type || '').trim().toLowerCase();
+            return type !== 'list'
+                && type !== 'table'
+                && type !== 'story'
+                && type !== 'zone-map'
+                && type !== 'strip'
+                && type !== 'p'
+                && type !== 'paragraph'
+                && !(type === 'image' && (!!child?.placement || child?.properties?.display === 'block'))
+                && !/^h[1-6]$/.test(type);
+        });
+        const directText = String(cell.content || '').trim();
+        const needsLeadBlock = directText.length > 0 || directInlineChildren.length > 0;
+        const blockChildren = needsLeadBlock
             ? [
                 {
                     type: 'p',
                     content: cell.content || '',
-                    children: children.filter((child) => {
-                        const type = String(child?.type || '').trim().toLowerCase();
-                        return type !== 'list'
-                            && type !== 'table'
-                            && type !== 'story'
-                            && type !== 'zone-map'
-                            && type !== 'strip'
-                            && type !== 'p'
-                            && type !== 'paragraph'
-                            && !(type === 'image' && (!!child?.placement || child?.properties?.display === 'block'))
-                            && !/^h[1-6]$/.test(type);
-                    }),
+                    children: directInlineChildren,
                     properties: {
                         ...(cell.properties || {}),
                         sourceId: cell.properties?.sourceId
@@ -276,7 +343,7 @@ function materializeTableCell(
                 placement,
                 source: cell,
                 style: mergedStyle,
-                measuredHeight: Math.max(insetsVertical, materializedChildren.height + insetsVertical),
+                measuredHeight: resolveTableCellMeasuredHeight(Math.max(insetsVertical, materializedChildren.height + insetsVertical), mergedStyle),
                 childBoxes: materializedChildren.boxes,
                 properties: { ...(cell.properties || {}), _tableBlockChildren: true }
             };
@@ -291,7 +358,7 @@ function materializeTableCell(
             placement,
             source: cell,
             style: mergedStyle,
-            measuredHeight: insetsVertical,
+            measuredHeight: resolveTableCellMeasuredHeight(insetsVertical, mergedStyle),
             content: undefined,
             properties: { ...(cell.properties || {}) }
         };
@@ -308,7 +375,7 @@ function materializeTableCell(
     } else {
         if (text) measuredHeight = fontSize * lineHeight;
     }
-    measuredHeight += insetsVertical;
+    measuredHeight = resolveTableCellMeasuredHeight(measuredHeight + insetsVertical, mergedStyle);
 
     return {
         placement,
@@ -324,6 +391,13 @@ function materializeTableCell(
             ...(resolved.lineYOffsets && resolved.lineYOffsets.length > 0 ? { _lineYOffsets: resolved.lineYOffsets.slice() } : {})
         }
     };
+}
+
+function resolveTableCellMeasuredHeight(measuredHeight: number, style: ElementStyle): number {
+    const explicitHeight = style.height !== undefined
+        ? LayoutUtils.validateUnit(style.height)
+        : 0;
+    return LayoutUtils.clampBoxHeight(Math.max(0, measuredHeight, explicitHeight), style);
 }
 
 export function materializeSpatialGridFlowBox(
@@ -554,7 +628,7 @@ export function materializeSpatialGridFlowBox(
     unit.glyphs = undefined;
     unit.ascent = undefined;
     unit.measuredWidth = tableWidth;
-    unit.measuredContentHeight = unit.heightOverride ?? (rowsHeight + verticalInsets);
+    unit.measuredContentHeight = LayoutUtils.clampBoxHeight(unit.heightOverride ?? (rowsHeight + verticalInsets), unit.style);
     unit.properties = {
         ...unit.properties,
         _tableModel: model,
@@ -828,6 +902,7 @@ export function positionSpatialGridFlowBoxes(
 
     const out: Box[] = [];
     const style = unit.style;
+    const tableBackgroundColor = String((style as any).backgroundColor || '').trim();
     const paddingTop = LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 0);
     const paddingLeft = LayoutUtils.validateUnit(style.paddingLeft ?? style.padding ?? 0);
     const borderTop = LayoutUtils.validateUnit(style.borderTopWidth ?? style.borderWidth ?? 0);
@@ -841,6 +916,32 @@ export function positionSpatialGridFlowBoxes(
     const rowDisplayIndexBySource = new Map<number, number>();
     for (let displayRowIndex = 0; displayRowIndex < rowIndices.length; displayRowIndex++) {
         rowDisplayIndexBySource.set(rowIndices[displayRowIndex], displayRowIndex);
+    }
+
+    if (isVisibleTableBackground(tableBackgroundColor)) {
+        out.push({
+            type: 'table_background',
+            x,
+            y,
+            w: Number.isFinite(unit.measuredWidth) ? Math.max(0, Number(unit.measuredWidth)) : tableContext.getBoxWidth(unit.style),
+            h: Math.max(0, unit.measuredContentHeight),
+            style: {
+                ...style,
+                backgroundColor: tableBackgroundColor
+            },
+            content: '',
+            properties: {
+                ...(unit.properties || {}),
+                _tableBackground: true
+            },
+            meta: {
+                ...unit.meta,
+                engineKey: `${unit.meta.engineKey}:background`,
+                sourceType: 'table_background',
+                generated: true,
+                pageIndex
+            }
+        });
     }
 
     let rowCursorY = contentY;
@@ -956,8 +1057,9 @@ export function positionSpatialGridFlowBoxes(
                 const cellPadTop = LayoutUtils.validateUnit(cellStyle.paddingTop ?? cellStyle.padding ?? 0);
                 const cellBorderLeft = LayoutUtils.validateUnit(cellStyle.borderLeftWidth ?? cellStyle.borderWidth ?? 0);
                 const cellBorderTop = LayoutUtils.validateUnit(cellStyle.borderTopWidth ?? cellStyle.borderWidth ?? 0);
+                const cellContentOffsetY = resolveTableCellContentOffsetY(cellStyle, cellHeight, cell.measuredHeight);
                 const offsetX = colCursorX + cellPadLeft + cellBorderLeft;
-                const offsetY = rowCursorY + cellPadTop + cellBorderTop;
+                const offsetY = rowCursorY + cellPadTop + cellBorderTop + cellContentOffsetY;
                 for (const child of cell.childBoxes) {
                     const childMeta = child.meta ? { ...child.meta, pageIndex } : { pageIndex } as any;
                     const emittedChildMeta = isRepeatedHeaderClone && childMeta.sourceId
@@ -982,6 +1084,29 @@ export function positionSpatialGridFlowBoxes(
     }
 
     return out;
+}
+
+function isVisibleTableBackground(value: string): boolean {
+    const normalized = value.trim().toLowerCase();
+    return normalized.length > 0 && normalized !== 'transparent' && normalized !== 'rgba(0,0,0,0)' && normalized !== 'rgba(0, 0, 0, 0)';
+}
+
+function resolveTableCellContentOffsetY(style: ElementStyle, cellHeight: number, measuredHeight: number): number {
+    const fontSize = LayoutUtils.validateUnit(style.fontSize ?? 0);
+    const lineHeight = Number(style.lineHeight || 0);
+    const strutHeight = fontSize > 0 && Number.isFinite(lineHeight) && lineHeight > 0
+        ? fontSize * lineHeight + LayoutUtils.validateUnit(style.paddingTop ?? style.padding ?? 0)
+            + LayoutUtils.validateUnit(style.paddingBottom ?? style.padding ?? 0)
+            + LayoutUtils.validateUnit(style.borderTopWidth ?? style.borderWidth ?? 0)
+            + LayoutUtils.validateUnit(style.borderBottomWidth ?? style.borderWidth ?? 0)
+        : 0;
+    const alignmentHeight = Math.max(0, Number(measuredHeight || 0), strutHeight);
+    const extra = Math.max(0, Number(cellHeight || 0) - alignmentHeight);
+    if (extra <= LAYOUT_DEFAULTS.wrapTolerance) return 0;
+    const align = String((style as any).verticalAlign || '').trim().toLowerCase();
+    if (align === 'middle') return extra / 2;
+    if (align === 'bottom' || align === 'text-bottom') return extra;
+    return 0;
 }
 
 export type TableLayoutContext = SpatialGridLayoutContext;

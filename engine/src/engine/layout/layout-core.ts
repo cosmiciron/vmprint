@@ -379,11 +379,11 @@ export class LayoutProcessor extends TextProcessor {
         // element's declared width in normal flow while allowing a narrower context
         // (e.g., drop-cap wrap) to constrain it further.
         if (style.width !== undefined) {
-            return Math.min(styleBasedWidth, contextWidth);
+            return Math.max(0, LayoutUtils.clampBoxWidth(styleBasedWidth + insets, style) - insets);
         }
 
         // No explicit style.width: context is authoritative (zone/column layout).
-        return contextWidth;
+        return Math.max(0, LayoutUtils.clampBoxWidth(contextWidth + insets, style) - insets);
     }
 
     private normalizeElementStyle(
@@ -501,7 +501,7 @@ export class LayoutProcessor extends TextProcessor {
         lineHeight: number
     ): number {
         if (style.width !== undefined) {
-            return Math.max(0, LayoutUtils.validateUnit(style.width));
+            return Math.max(0, LayoutUtils.clampBoxWidth(LayoutUtils.validateUnit(style.width), style));
         }
 
         if (!context) {
@@ -1033,7 +1033,7 @@ export class LayoutProcessor extends TextProcessor {
             orphans: 1,
             widows: 1,
             measuredContentHeight: 0,
-            heightOverride: style.height !== undefined ? LayoutUtils.validateUnit(style.height) : undefined,
+            heightOverride: style.height !== undefined ? LayoutUtils.clampBoxHeight(LayoutUtils.validateUnit(style.height), style) : undefined,
             _materializationMode: 'reflowable',
             _sourceElement: element,
             _unresolvedElement: element,
@@ -1065,7 +1065,7 @@ export class LayoutProcessor extends TextProcessor {
             fontSize,
             lineHeight
         });
-        const heightOverride = style.height !== undefined ? LayoutUtils.validateUnit(style.height) : undefined;
+        const heightOverride = style.height !== undefined ? LayoutUtils.clampBoxHeight(LayoutUtils.validateUnit(style.height), style) : undefined;
 
         return {
             kind: 'flow-block',
@@ -1174,7 +1174,9 @@ export class LayoutProcessor extends TextProcessor {
         unit.glyphs = undefined;
         unit.ascent = undefined;
         unit.measuredWidth = boxWidth;
-        unit.measuredContentHeight = unit.heightOverride ?? measuredHeight;
+        unit.measuredContentHeight = unit.heightOverride !== undefined
+            ? LayoutUtils.clampBoxHeight(unit.heightOverride, style)
+            : LayoutUtils.clampBoxHeight(measuredHeight, style);
         delete unit.properties._lineOffsets;
         delete unit.properties._lineWidths;
         delete unit.properties._lineYOffsets;
@@ -1246,7 +1248,9 @@ export class LayoutProcessor extends TextProcessor {
         }
 
         unit.lines = lines.length > 0 ? lines : undefined;
-        unit.measuredContentHeight = unit.heightOverride ?? contentHeight;
+        unit.measuredContentHeight = unit.heightOverride !== undefined
+            ? LayoutUtils.clampBoxHeight(unit.heightOverride, style)
+            : LayoutUtils.clampBoxHeight(contentHeight, style);
         if (resolved.lineOffsets && resolved.lineOffsets.length > 0) {
             unit.properties._lineOffsets = resolved.lineOffsets.slice();
         } else {
@@ -1411,8 +1415,8 @@ export class LayoutProcessor extends TextProcessor {
         const w = Number.isFinite(unit.measuredWidth)
             ? Math.max(0, Number(unit.measuredWidth))
             : style.width !== undefined
-                ? LayoutUtils.validateUnit(style.width)
-                : Math.max(0, _pageWidth - LayoutUtils.validateUnit(style.marginLeft || 0) - LayoutUtils.validateUnit(style.marginRight || 0));
+                ? LayoutUtils.clampBoxWidth(LayoutUtils.validateUnit(style.width), style)
+                : LayoutUtils.clampBoxWidth(Math.max(0, _pageWidth - LayoutUtils.validateUnit(style.marginLeft || 0) - LayoutUtils.validateUnit(style.marginRight || 0)), style);
         const h = Math.max(0, unit.measuredContentHeight);
 
         if (unit.properties?._tableModel) {
