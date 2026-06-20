@@ -379,7 +379,7 @@ export class LayoutProcessor extends TextProcessor {
         // element's declared width in normal flow while allowing a narrower context
         // (e.g., drop-cap wrap) to constrain it further.
         if (style.width !== undefined) {
-            return Math.max(0, LayoutUtils.clampBoxWidth(styleBasedWidth + insets, style) - insets);
+            return Math.max(0, Math.min(styleBasedWidth, contextWidth));
         }
 
         // No explicit style.width: context is authoritative (zone/column layout).

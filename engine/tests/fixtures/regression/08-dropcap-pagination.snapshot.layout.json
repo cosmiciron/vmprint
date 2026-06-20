@@ -411,7 +411,7 @@
         "type": "table_cell",
         "x": 72,
         "y": 307.571875,
-        "w": 284.217448,
+        "w": 279.817448,
         "h": 30.20625,
         "lines": [
           [
@@ -427,9 +427,9 @@
       },
       {
         "type": "table_cell",
-        "x": 364.217448,
+        "x": 359.817448,
         "y": 307.571875,
-        "w": 175.782552,
+        "w": 180.182552,
         "h": 30.20625,
         "lines": [
           [
@@ -447,7 +447,7 @@
         "type": "table_cell",
         "x": 72,
         "y": 343.778125,
-        "w": 284.217448,
+        "w": 279.817448,
         "h": 115.2375,
         "lines": []
       },
@@ -455,7 +455,7 @@
         "type": "dropcap",
         "x": 78.6,
         "y": 349.778125,
-        "w": 271.017448,
+        "w": 266.617448,
         "h": 51.01875,
         "lines": [
           [
@@ -473,13 +473,13 @@
         "type": "p",
         "x": 140.259733,
         "y": 349.778125,
-        "w": 209.357715,
+        "w": 204.957715,
         "h": 51.01875,
         "lines": [
           [
             {
-              "text": "rnamental initials inside tabular layouts",
-              "width": 206.109375,
+              "text": "rnamental initials inside tabular ",
+              "width": 168.087891,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -487,8 +487,8 @@
           ],
           [
             {
-              "text": "first appeared in reference books ",
-              "width": 178.769531,
+              "text": "layouts first appeared in reference ",
+              "width": 184.769531,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -496,8 +496,8 @@
           ],
           [
             {
-              "text": "where each entry opened with a large ",
-              "width": 203.460938,
+              "text": "books where each entry opened with ",
+              "width": 198.791016,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -509,13 +509,13 @@
         "type": "p",
         "x": 78.6,
         "y": 400.796875,
-        "w": 271.017448,
+        "w": 266.617448,
         "h": 51.01875,
         "lines": [
           [
             {
-              "text": "letter to aid quick scanning. The drop cap must ",
-              "width": 252.134766,
+              "text": "a large letter to aid quick scanning. The drop cap ",
+              "width": 262.822266,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -523,8 +523,8 @@
           ],
           [
             {
-              "text": "stay within the cell's content boundary and align ",
-              "width": 257.115234,
+              "text": "must stay within the cell's content boundary and ",
+              "width": 257.765625,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -532,8 +532,8 @@
           ],
           [
             {
-              "text": "with surrounding body text.",
-              "width": 143.414063,
+              "text": "align with surrounding body text.",
+              "width": 172.101563,
               "ascent": 905.273438,
               "descent": 211.914063,
               "fontFamily": ""
@@ -543,9 +543,9 @@
       },
       {
         "type": "table_cell",
-        "x": 364.217448,
+        "x": 359.817448,
         "y": 343.778125,
-        "w": 175.782552,
+        "w": 180.182552,
         "h": 115.2375,
         "lines": [
           [

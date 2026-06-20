@@ -1880,6 +1880,7 @@ export class LayoutEngine extends LayoutProcessor {
             : 0;
         const contextBase = this.buildRuntimeFormattingContext(session, pageIndex);
         const actors = collectRuntimeFormattingActors(runtimeSession.getRegisteredActors?.() ?? []);
+        actor.rebuildLiveFlowBox?.();
         const visibleCandidate = refreshRuntimeActorHostChain(actors, actor);
         const redrawActor = (candidate: RuntimeActor): { patchedActors: number; pageIndexes: number[] } =>
             runtimeSession.applyContentOnlyActorUpdates?.(pages, [], [candidate], contextBase) ?? { patchedActors: 0, pageIndexes: [] };
