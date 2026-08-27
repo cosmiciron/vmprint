@@ -1546,7 +1546,8 @@ export class LayoutProcessor extends TextProcessor {
                 ...this.config.layout,
                 pageBackground: undefined,
                 pageSize: { width: innerWidth, height: LayoutProcessor.REGION_LAYOUT_HEIGHT },
-                margins: { top: 0, right: 0, bottom: 0, left: 0 }
+                margins: { top: 0, right: 0, bottom: 0, left: 0 },
+                orientation: undefined, // prevent applyOrientation from swapping already-resolved region dims
             },
             header: undefined,
             footer: undefined

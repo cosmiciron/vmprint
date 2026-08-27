@@ -5805,6 +5805,77 @@ async function run() {
         }
     );
 
+    await _checkAsync(
+        'landscape orientation: footer boxes remain within page bounds',
+        'footer content on a landscape LETTER document must have in-bounds x-coordinates (not ~499,990 from the orientation swap bug)',
+        async () => {
+            const landscapeConfig = {
+                layout: {
+                    pageSize: 'LETTER',
+                    orientation: 'landscape' as const,
+                    margins: { top: 36, right: 36, bottom: 36, left: 36 },
+                    fontFamily: 'Helvetica',
+                    fontSize: 11,
+                    lineHeight: 1.2
+                },
+                fonts: { regular: 'Helvetica' },
+                styles: {},
+                footer: {
+                    default: {
+                        elements: [
+                            {
+                                type: 'p',
+                                content: 'Page footer',
+                                properties: {
+                                    sourceId: 'landscape-footer-center',
+                                    style: { textAlign: 'center' }
+                                }
+                            }
+                        ]
+                    }
+                }
+            };
+            const bodyElements = [
+                { type: 'p', content: 'Landscape document body paragraph.', properties: { sourceId: 'landscape-body' } }
+            ];
+
+            const landscapeEngine = new LayoutEngine(landscapeConfig as any);
+            await landscapeEngine.waitForFonts();
+            const landscapePages = landscapeEngine.simulate(bodyElements as any);
+
+            for (const page of landscapePages) {
+                const footerBoxes = (page.boxes || []).filter((box: any) => box.meta?.sourceType === 'footer');
+                assert.ok(footerBoxes.length > 0, `landscape page ${page.index} should emit at least one footer box`);
+                for (const box of footerBoxes) {
+                    assert.ok(
+                        box.x >= 0 && box.x < page.width,
+                        `footer box x=${box.x} should be within landscape page width ${page.width}`
+                    );
+                }
+            }
+
+            // Portrait control: the fix must not break portrait footer layout
+            const portraitConfig = {
+                ...landscapeConfig,
+                layout: { ...landscapeConfig.layout, orientation: undefined }
+            };
+            const portraitEngine = new LayoutEngine(portraitConfig as any);
+            await portraitEngine.waitForFonts();
+            const portraitPages = portraitEngine.simulate(bodyElements as any);
+
+            for (const page of portraitPages) {
+                const footerBoxes = (page.boxes || []).filter((box: any) => box.meta?.sourceType === 'footer');
+                assert.ok(footerBoxes.length > 0, `portrait page ${page.index} should emit at least one footer box`);
+                for (const box of footerBoxes) {
+                    assert.ok(
+                        box.x >= 0 && box.x < page.width,
+                        `portrait footer box x=${box.x} should be within page width ${page.width}`
+                    );
+                }
+            }
+        }
+    );
+
     console.log(`[engine-regression.spec] OK (${fixtures.length} fixtures)`);
 }
 
