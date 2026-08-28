@@ -5869,8 +5869,8 @@ async function run() {
                 assert.ok(footerBoxes.length > 0, `portrait page ${page.index} should emit at least one footer box`);
                 for (const box of footerBoxes) {
                     assert.ok(
-                        box.x >= 0 && box.x < page.width,
-                        `portrait footer box x=${box.x} should be within page width ${page.width}`
+                        box.x >= 0 && box.x + box.w <= page.width,
+                        `portrait footer box x=${box.x} w=${box.w} should be within page width ${page.width}`
                     );
                 }
             }
