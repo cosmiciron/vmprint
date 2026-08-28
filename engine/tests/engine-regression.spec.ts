@@ -5844,6 +5844,7 @@ async function run() {
             const landscapePages = landscapeEngine.simulate(bodyElements as any);
 
             for (const page of landscapePages) {
+                assert.ok(page.width > page.height, `expected landscape page geometry, got ${page.width}x${page.height}`);
                 const footerBoxes = (page.boxes || []).filter((box: any) => box.meta?.sourceType === 'footer');
                 assert.ok(footerBoxes.length > 0, `landscape page ${page.index} should emit at least one footer box`);
                 for (const box of footerBoxes) {
