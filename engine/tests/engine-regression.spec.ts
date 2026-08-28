@@ -5877,6 +5877,80 @@ async function run() {
         }
     );
 
+    await _checkAsync(
+        'landscape orientation via pageTemplates: footer boxes remain within page bounds',
+        'orientation supplied only through pageTemplates (not the top-level field) must not cause footer content to render off-page',
+        async () => {
+            // orientation comes from the template, not the top-level field — exercises the pageTemplates: undefined safeguard in layoutRegion
+            const templateLandscapeConfig = {
+                layout: {
+                    pageSize: 'LETTER',
+                    pageTemplates: [{ selector: 'all', orientation: 'landscape' as const }],
+                    margins: { top: 36, right: 36, bottom: 36, left: 36 },
+                    fontFamily: 'Helvetica',
+                    fontSize: 11,
+                    lineHeight: 1.2
+                },
+                fonts: { regular: 'Helvetica' },
+                styles: {},
+                footer: {
+                    default: {
+                        elements: [
+                            {
+                                type: 'p',
+                                content: 'Page footer',
+                                properties: {
+                                    sourceId: 'template-landscape-footer-center',
+                                    style: { textAlign: 'center' }
+                                }
+                            }
+                        ]
+                    }
+                }
+            };
+            const bodyElements = [
+                { type: 'p', content: 'Landscape document body paragraph.', properties: { sourceId: 'template-landscape-body' } }
+            ];
+
+            const engine = new LayoutEngine(templateLandscapeConfig as any);
+            await engine.waitForFonts();
+            const pages = engine.simulate(bodyElements as any);
+
+            for (const page of pages) {
+                assert.ok(page.width > page.height, `expected landscape page geometry, got ${page.width}x${page.height}`);
+                const footerBoxes = (page.boxes || []).filter((box: any) => box.meta?.sourceType === 'footer');
+                assert.ok(footerBoxes.length > 0, `landscape (template) page ${page.index} should emit at least one footer box`);
+                for (const box of footerBoxes) {
+                    assert.ok(
+                        box.x >= 0 && box.x + box.w <= page.width,
+                        `footer box x=${box.x} w=${box.w} should be within landscape page width ${page.width}`
+                    );
+                }
+            }
+
+            // Portrait control: no templates, orientation must default to portrait
+            const portraitConfig = {
+                ...templateLandscapeConfig,
+                layout: { ...templateLandscapeConfig.layout, pageTemplates: undefined }
+            };
+            const portraitEngine = new LayoutEngine(portraitConfig as any);
+            await portraitEngine.waitForFonts();
+            const portraitPages = portraitEngine.simulate(bodyElements as any);
+
+            for (const page of portraitPages) {
+                assert.ok(page.width < page.height, `expected portrait page geometry, got ${page.width}x${page.height}`);
+                const footerBoxes = (page.boxes || []).filter((box: any) => box.meta?.sourceType === 'footer');
+                assert.ok(footerBoxes.length > 0, `portrait (template-free) page ${page.index} should emit at least one footer box`);
+                for (const box of footerBoxes) {
+                    assert.ok(
+                        box.x >= 0 && box.x + box.w <= page.width,
+                        `portrait footer box x=${box.x} w=${box.w} should be within page width ${page.width}`
+                    );
+                }
+            }
+        }
+    );
+
     console.log(`[engine-regression.spec] OK (${fixtures.length} fixtures)`);
 }
 
