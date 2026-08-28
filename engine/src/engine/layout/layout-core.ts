@@ -1545,6 +1545,8 @@ export class LayoutProcessor extends TextProcessor {
             layout: {
                 ...this.config.layout,
                 pageBackground: undefined,
+                // inherited pageTemplates can override pageSize, orientation, and margins inside resolvePageGeometry, defeating the values set below
+                pageTemplates: undefined,
                 pageSize: { width: innerWidth, height: LayoutProcessor.REGION_LAYOUT_HEIGHT },
                 margins: { top: 0, right: 0, bottom: 0, left: 0 },
                 orientation: undefined, // prevent applyOrientation from swapping already-resolved region dims
