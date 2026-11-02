@@ -265,6 +265,9 @@ export interface PackagerUnit {
      */
     acceptsPlacementFrame?(frameAvailableWidth: number, fullAvailableWidth: number, context: PackagerContext): boolean;
 
+    /** Complete authored text, retained when only a fragment is emitted. */
+    getSourceText?(): string | undefined;
+
     /** 
      * Emit boxes for the given available space.
      * Returns null if it absolutely cannot even start to fit.

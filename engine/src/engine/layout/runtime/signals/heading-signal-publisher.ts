@@ -74,7 +74,10 @@ export class HeadingSignalCollaborator implements Collaborator {
             const firstBox = boxes[0];
             const sourceType = firstBox.meta?.sourceType ?? actor.actorKind;
             const semanticRole = firstBox.meta?.semanticRole;
-            const heading = boxes.map(extractBoxText).join(' ').replace(/\s+/g, ' ').trim();
+            // A split changes the visible prefix, not the heading's identity or
+            // title. Hosted headings still use their own boxes, never host text.
+            const sourceText = sourceId === actor.sourceId ? actor.getSourceText?.() : undefined;
+            const heading = (sourceText ?? boxes.map(extractBoxText).join(' ')).replace(/\s+/g, ' ').trim();
             if (!heading) continue;
             const y = Math.min(...boxes.map(box => Number.isFinite(box.y) ? Number(box.y) : 0));
             host.publishActorSignal({

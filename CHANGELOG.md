@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- **Long split headings after keep-with-next chapters**: Publish the accepted
+  chapter prefix before its split section tail. Preserve the section's complete
+  authored title instead of using a page-dependent visible prefix, which could
+  make TOC geometry oscillate. Keep the settlement budget across replay ticks
+  until pagination stabilizes, so finalization-driven oscillation reaches the
+  existing hard stop. Added the supplied long-heading fixture and separate
+  publication-order, rollback/replay, and cross-tick oscillation regressions.
+
 - **Native TOC discovery and settlement**: Batch committed heading discovery at
   pagination completion so book-sized heading sets converge under the default
   settlement budget. The existing cycle cap and oscillation protection remain

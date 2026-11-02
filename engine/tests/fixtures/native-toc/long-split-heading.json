@@ -1,0 +1,105 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 600
+    },
+    "margins": {
+      "top": 40,
+      "right": 40,
+      "bottom": 40,
+      "left": 40
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "lang": "en",
+    "direction": "auto"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "p": {
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "h1": {
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "marginTop": 0,
+      "marginBottom": 12,
+      "keepWithNext": true
+    },
+    "h2": {
+      "fontSize": 14,
+      "fontWeight": "bold",
+      "marginTop": 10,
+      "marginBottom": 8,
+      "keepWithNext": true
+    }
+  },
+  "elements": [
+    {
+      "type": "toc",
+      "content": "",
+      "properties": {
+        "sourceId": "main-toc",
+        "toc": {
+          "title": "Contents",
+          "levelFilter": [
+            1,
+            2
+          ],
+          "style": {
+            "marginBottom": 16,
+            "paddingTop": 8,
+            "paddingBottom": 8,
+            "paddingLeft": 12,
+            "paddingRight": 12,
+            "backgroundColor": "#f8fafc",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 1,
+            "fontSize": 11,
+            "lineHeight": 1.4
+          }
+        }
+      }
+    },
+    {
+      "type": "p",
+      "content": "Preface",
+      "properties": {
+        "style": {
+          "height": 300
+        }
+      }
+    },
+    {
+      "type": "h1",
+      "content": "Outer chapter",
+      "properties": {
+        "sourceId": "outer",
+        "style": {
+          "keepWithNext": true
+        }
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Inner section Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. Long heading text. ",
+      "properties": {
+        "sourceId": "inner",
+        "style": {
+          "keepWithNext": false,
+          "allowLineSplit": true,
+          "orphans": 1,
+          "widows": 1
+        }
+      }
+    }
+  ]
+}

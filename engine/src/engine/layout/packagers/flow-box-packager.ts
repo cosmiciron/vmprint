@@ -82,6 +82,13 @@ export class FlowBoxPackager implements PackagerUnit {
         this.continuationOf = resolvedIdentity.continuationOf;
     }
 
+    // Frozen fragments retain their authored source, even when their shaped
+    // lines cover only the first part of a heading.
+    getSourceText(): string | undefined {
+        const source = this.flowBox._sourceElement;
+        return source ? (this.processor as any).getElementText(source) : undefined;
+    }
+
     getLiveContent(): string {
         return String(this.flowBox._sourceElement?.content || '');
     }

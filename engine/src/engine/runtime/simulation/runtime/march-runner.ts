@@ -427,8 +427,6 @@ export class SimulationMarchRunner implements SimulationRunner {
             : new Map<number, number>();
         this.lastUpdateSummary = createEmptyUpdateSummary();
         this.lastRenderRevisionPageIndexes = [];
-        this.reactiveResettlementCycles = 0;
-        this.reactiveResettlementSignatures.clear();
 
         if (!this.initialPlacementPass && this.initialPaginationComplete) {
             this.session.advanceSimulationTick();
@@ -808,6 +806,10 @@ export class SimulationMarchRunner implements SimulationRunner {
         }
 
         if (!this.maybeSettleAtCheckpoint()) {
+            // Finalization-driven replay spans ticks. Retain its budget until a
+            // complete pagination pass is stable, rather than resetting per tick.
+            this.reactiveResettlementCycles = 0;
+            this.reactiveResettlementSignatures.clear();
             const currentTick = this.session.getSimulationTick();
             const hasActiveSteppedActors =
                 this.steppedActorsEnabled()

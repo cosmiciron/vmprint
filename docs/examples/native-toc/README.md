@@ -133,3 +133,22 @@ This checks Gavin's pinned original input, this example, larger heading sets,
 wrapped multi-page contents, grouped placement, rollback/replay, and repeated-run
 determinism. The original fixture's provenance is recorded in the
 [fixture notes](../../../engine/tests/fixtures/native-toc/README.md).
+
+## Long headings at a page boundary
+
+A keep-with-next chapter can be followed by a section heading that allows line
+splitting. The TOC uses the complete section title and the page where that
+heading starts, even if only its first lines fit beside the chapter. Entries
+remain in chapter/section reading order. The engine retains its settlement
+budget across pagination replays and reports an error if geometry fails to
+stabilize.
+
+Run the saved follow-up reproduction after rebuilding the engine:
+
+```sh
+node docs/examples/native-toc/layout.mjs engine/tests/fixtures/native-toc/long-split-heading.json
+```
+
+The regression expects two entries, the complete long section title, and two
+document pages. This requires the follow-up long-heading repair in addition to
+`c9b928e`; use a source build containing both repairs.

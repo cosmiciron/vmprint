@@ -4,6 +4,7 @@ import { VMPrintEngine, loadDocument, toLayoutConfig } from '../src';
 import { createPrintEngineRuntime } from '../src/font-management/runtime';
 import { LayoutSession } from '../src/engine/layout/layout-session';
 import { HeadingSignalCollaborator, HEADING_SIGNAL_TOPIC } from '../src/engine/layout/runtime/signals/heading-signal-publisher';
+import { FlowBoxPackager } from '../src/engine/layout/packagers/flow-box-packager';
 import type { PackagerUnit } from '../src/engine/layout/packagers/packager-types';
 import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 
@@ -12,6 +13,7 @@ const small = JSON.parse(fs.readFileSync(new URL('./fixtures/regression/24-toc-l
 const reported = JSON.parse(fs.readFileSync(new URL('./fixtures/native-toc/20-root-headings.json', import.meta.url), 'utf8'));
 const gavin = JSON.parse(fs.readFileSync(new URL('./fixtures/native-toc/gavin-20-root-headings.json', import.meta.url), 'utf8'));
 const book = JSON.parse(fs.readFileSync(new URL('../../docs/examples/native-toc/book.json', import.meta.url), 'utf8'));
+const longSplit = JSON.parse(fs.readFileSync(new URL('./fixtures/native-toc/long-split-heading.json', import.meta.url), 'utf8'));
 let FontManager: any;
 function document(count: number, story?: 'paragraph' | 'heading', wrapped = false): any {
     const doc = structuredClone(reported);
@@ -88,7 +90,7 @@ async function checkAuthoredDocument(doc: any, name: string, multiPageToc = fals
         const id = heading.properties.sourceId;
         const headingPage = pages.findIndex(page => page.boxes.some(box => box.meta?.sourceId === `author:${id}` && text(box).trim()));
         assert.ok(headingPage >= 0, `${name}: rendered heading ${id}`);
-        expected.push(`${heading.content} ${headingPage + 1}`);
+        expected.push(`${heading.content.trim().replace(/\s+/g, ' ')} ${headingPage + 1}`);
     }
     assert.equal(contents, expected.join(' '), `${name}: every heading once, in order, with its final page`);
     if (multiPageToc) {
@@ -100,7 +102,7 @@ async function checkAuthoredDocument(doc: any, name: string, multiPageToc = fals
     console.log(`PASS ${name}: ${headings.length} entries, ${pages.length} pages`);
 }
 
-function checkGroupedPublication() {
+function checkGroupedPublication(headingTail = false) {
     let canSplit = false;
     const commits: string[] = [];
     const session = new LayoutSession({
@@ -119,8 +121,9 @@ function checkGroupedPublication() {
         reshape: () => ({ currentFragment: null, continuationFragment: null })
     });
     const heading = actor('group-heading', 'h2', 'Grouped heading', 20);
-    const tail = actor('tail', 'p', 'Body tail', 100);
-    const partA = actor('tail', 'p', 'First body lines', 40);
+    const tail = actor('tail', headingTail ? 'h2' : 'p', 'Complete tail heading', 100);
+    const partA = actor('tail', headingTail ? 'h2' : 'p', 'First body lines', 40);
+    partA.getSourceText = () => 'Complete tail heading';
     const partB = { ...actor('tail', 'p', 'Remaining body lines', 60), actorId: 'tail:continuation', fragmentIndex: 1, continuationOf: tail.actorId };
     tail.reshape = () => canSplit ? { currentFragment: partA, continuationFragment: partB }
         : { currentFragment: null, continuationFragment: tail };
@@ -151,19 +154,40 @@ function checkGroupedPublication() {
     pages.length = 0;
     assert.equal(session.getActorSignals(HEADING_SIGNAL_TOPIC).length, 0, 'rollback removes accepted heading fact');
     run(2);
-    const signals = session.getActorSignals(HEADING_SIGNAL_TOPIC);
+    const allSignals = session.getActorSignals(HEADING_SIGNAL_TOPIC);
+    if (headingTail) {
+        assert.deepEqual(allSignals.map(signal => signal.publisherSourceId), [heading.sourceId, tail.sourceId], 'prefix publishes before split heading tail');
+        assert.equal(allSignals[1].payload?.heading, 'Complete tail heading');
+    }
+    const signals = allSignals.filter(signal => signal.publisherSourceId === heading.sourceId);
     assert.equal(signals.length, 1, 'replay publishes one heading');
     assert.equal(signals[0].pageIndex, 2, 'replay replaces the old page position');
     assert.equal(signals[0].cursorY, 490);
     assert.equal(signals[0].payload?.heading, 'Grouped heading');
     session.notifyActorCommitted(heading, pages[0].boxes.filter((b: any) => b.meta.sourceId === heading.sourceId));
-    assert.equal(session.getActorSignals(HEADING_SIGNAL_TOPIC).length, 1, 'repeated commit remains keyed by heading identity');
+    assert.equal(session.getActorSignals(HEADING_SIGNAL_TOPIC).filter(signal => signal.publisherSourceId === heading.sourceId).length, 1, 'repeated commit remains keyed by heading identity');
     console.log('PASS grouped heading accepted/rejected placement, rollback, and replay');
 }
 
 async function main() {
     FontManager = await loadLocalFontManager();
     checkGroupedPublication();
+    checkGroupedPublication(true);
+    const sourceText = FlowBoxPackager.prototype.getSourceText;
+    let revision = 0;
+    try {
+        FlowBoxPackager.prototype.getSourceText = function () {
+            const text = sourceText.call(this);
+            if (revision >= 32) throw new Error('Oscillation guard failed to stop within 32 heading revisions');
+            return this.sourceId === 'author:outer' ? `${text} revision ${revision++ % 2}` : text;
+        };
+        await assert.rejects(() => layout(longSplit), /Reactive geometry resettlement exceeded the cycle cap|Reactive geometry oscillation detected/,
+            'finalization-driven oscillation remains bounded across replay ticks');
+    } finally {
+        FlowBoxPackager.prototype.getSourceText = sourceText;
+    }
+    console.log('PASS finalization-driven oscillation hard stop');
+    await checkAuthoredDocument(longSplit, 'Long split heading');
     await checkAuthoredDocument(gavin, 'Gavin pinned original');
     await checkAuthoredDocument(book, 'Native TOC book example', true);
     if (process.argv[2]) return runCase(process.argv[2], Number(process.argv[3] ?? 20));

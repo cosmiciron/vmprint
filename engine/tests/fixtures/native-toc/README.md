@@ -16,3 +16,9 @@ original reproduction below.
 `loadDocument` → `VMPrintEngine` → `layout()` API. Gavin's case must contain all
 20 entries exactly once and each reference must match the final rendered page.
 The test also exercises the runnable book in `docs/examples/native-toc/`.
+
+- `long-split-heading.json` preserves the follow-up reproduction supplied after
+  the original repair: a keep-with-next chapter precedes a long, splittable
+  section heading. The initial layout splits the section tail. The regression
+  requires the full title in chapter/section reading order, correct final page
+  references, and deterministic completion with the default settlement budget.
