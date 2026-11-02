@@ -1,5 +1,9 @@
 # Native TOC fixtures
 
+Credit to **Gavin Morgan ([gavmor](https://github.com/gavmor))** for finding and
+reporting the native TOC discovery and missing-heading bugs and supplying the
+original reproduction below.
+
 - `gavin-20-root-headings.json` is Gavin Morgan's original reproduction from
   [gavmor/vmprint at c2807b6d0c91ad5bbacfd41a27182c3b6eed04b1](https://github.com/gavmor/vmprint/blob/c2807b6d0c91ad5bbacfd41a27182c3b6eed04b1/engine/tests/fixtures/regression/77-toc-many-root-headings.json).
   Its document data is preserved: LETTER pages, 50-unit margins, native TOC,

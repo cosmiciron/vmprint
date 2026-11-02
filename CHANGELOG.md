@@ -8,6 +8,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Native TOC discovery and settlement**: Batch committed heading discovery at
+  pagination completion so book-sized heading sets converge under the default
+  settlement budget. The existing cycle cap and oscillation protection remain
+  in place; callers do not need a runtime-cap override or an extra layout call.
+- **Missing grouped headings**: Publish keep-with-next heading prefixes after
+  their tail-split formation is accepted and before the page advances. Rejected
+  candidates remain unpublished, and rollback/replay restores heading facts and
+  their final page positions.
+- **Headings inside stories**: Publish each child heading's own identity and
+  text, including headings in paragraph-first stories and later story fragments.
+  Preserve reading order across columns instead of interleaving entries by
+  vertical position. Also prevent pending story children from being duplicated
+  during continuation.
+- **Multi-page contents and wrapped titles**: Continue the remaining shaped TOC
+  lines rather than restarting the heading list. Measure text height instead of
+  assigning a fixed height per entry, and resettle page-reference edits that can
+  affect wrapping or split fragments.
+
+### Added
+
+- **Runnable native TOC book example**:
+  [JSON, Node.js runner, and authoring guide](docs/examples/native-toc/README.md)
+  using the existing `loadDocument` → `VMPrintEngine` → `layout()` API. The
+  example covers six two-column stories, chapter and section headings, a wrapped
+  title, and multi-page contents. With the bundled fonts it produces 42 entries,
+  19 document pages, and two contents pages.
+- **Original report regression**: Preserve
+  [Gavin's pinned 20-heading fixture](engine/tests/fixtures/native-toc/README.md).
+  It now completes with default settings and includes every heading exactly once
+  with its final page reference, including Section 18 on physical page 5.
+- **Regression coverage**: Check progressively larger sets through 200 headings,
+  both story starting patterns, wrapped multi-page contents, accepted/rejected
+  grouped placement, rollback/replay, and repeated-run determinism. The focused
+  suite runs with `npm run test:toc --prefix engine` and is included in `npm test`.
+  Clarify in the scripting guide that the native TOC populates itself without a
+  custom messaging handler.
+
+### Thanks
+
+- **Gavin Morgan ([gavmor](https://github.com/gavmor))** for finding and reporting
+  the native TOC failures, supplying the reproducible fixture, and highlighting
+  the need for clear guidance on book-sized contents and headings inside stories.
+
 ---
 
 ## [1.5.0] - 2026-06-11

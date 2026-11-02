@@ -1,5 +1,10 @@
 # Native table of contents for a book
 
+Thanks to **Gavin Morgan ([gavmor](https://github.com/gavmor))** for finding and
+reporting the native TOC bugs and providing the original reproduction. His book
+use case prompted the repair and this example; see the
+[changelog](../../../CHANGELOG.md#unreleased) for the fixes and regression scope.
+
 Use `loadDocument`, `VMPrintEngine`, and `LocalFontManager`, then await
 `engine.layout()`. That is the intended Node.js API for a native table of
 contents, including headings inside two-column stories and contents spanning
