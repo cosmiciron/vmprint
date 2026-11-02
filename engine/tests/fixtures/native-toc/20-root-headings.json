@@ -1,0 +1,353 @@
+{
+  "documentVersion": "1.1",
+  "layout": {
+    "pageSize": {
+      "width": 420,
+      "height": 600
+    },
+    "margins": {
+      "top": 40,
+      "right": 40,
+      "bottom": 40,
+      "left": 40
+    },
+    "fontFamily": "Arimo",
+    "fontSize": 11,
+    "lineHeight": 1.3,
+    "lang": "en",
+    "direction": "auto"
+  },
+  "fonts": {
+    "regular": "Arimo"
+  },
+  "styles": {
+    "p": {
+      "marginBottom": 10,
+      "allowLineSplit": true,
+      "orphans": 2,
+      "widows": 2
+    },
+    "h1": {
+      "fontSize": 18,
+      "fontWeight": "bold",
+      "marginTop": 0,
+      "marginBottom": 12,
+      "keepWithNext": true
+    },
+    "h2": {
+      "fontSize": 14,
+      "fontWeight": "bold",
+      "marginTop": 10,
+      "marginBottom": 8,
+      "keepWithNext": true
+    }
+  },
+  "elements": [
+    {
+      "type": "toc",
+      "content": "",
+      "properties": {
+        "sourceId": "main-toc",
+        "toc": {
+          "title": "Contents",
+          "levelFilter": [
+            1,
+            2
+          ],
+          "style": {
+            "marginBottom": 16,
+            "paddingTop": 8,
+            "paddingBottom": 8,
+            "paddingLeft": 12,
+            "paddingRight": 12,
+            "backgroundColor": "#f8fafc",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 1,
+            "fontSize": 11,
+            "lineHeight": 1.4
+          }
+        }
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 0",
+      "properties": {
+        "sourceId": "section-0"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-0"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 1",
+      "properties": {
+        "sourceId": "section-1"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-1"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 2",
+      "properties": {
+        "sourceId": "section-2"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-2"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 3",
+      "properties": {
+        "sourceId": "section-3"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-3"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 4",
+      "properties": {
+        "sourceId": "section-4"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-4"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 5",
+      "properties": {
+        "sourceId": "section-5"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-5"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 6",
+      "properties": {
+        "sourceId": "section-6"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-6"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 7",
+      "properties": {
+        "sourceId": "section-7"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-7"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 8",
+      "properties": {
+        "sourceId": "section-8"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-8"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 9",
+      "properties": {
+        "sourceId": "section-9"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-9"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 10",
+      "properties": {
+        "sourceId": "section-10"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-10"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 11",
+      "properties": {
+        "sourceId": "section-11"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-11"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 12",
+      "properties": {
+        "sourceId": "section-12"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-12"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 13",
+      "properties": {
+        "sourceId": "section-13"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-13"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 14",
+      "properties": {
+        "sourceId": "section-14"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-14"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 15",
+      "properties": {
+        "sourceId": "section-15"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-15"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 16",
+      "properties": {
+        "sourceId": "section-16"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-16"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 17",
+      "properties": {
+        "sourceId": "section-17"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-17"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 18",
+      "properties": {
+        "sourceId": "section-18"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-18"
+      }
+    },
+    {
+      "type": "h2",
+      "content": "Section 19",
+      "properties": {
+        "sourceId": "section-19"
+      }
+    },
+    {
+      "type": "p",
+      "content": "The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. The paragraph follows the heading and fills the page with enough text to exercise grouping and splitting. ",
+      "properties": {
+        "sourceId": "body-19"
+      }
+    }
+  ]
+}

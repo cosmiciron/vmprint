@@ -159,7 +159,7 @@ export class FragmentSessionRuntime {
                         : box.properties
                 };
                 if (placed.meta) {
-                    placed.meta = { ...placed.meta, pageIndex: state.pageIndex };
+                    placed.meta = { ...placed.meta, actorId: actor.actorId, pageIndex: state.pageIndex };
                 }
                 placedBoxes.push(placed);
             }

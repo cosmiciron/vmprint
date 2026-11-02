@@ -109,6 +109,7 @@ export type TransitionsRuntimeHost = {
         actorQueue: PackagerUnit[],
         snapshot: LocalBranchSnapshot
     ): { currentY: number; lastSpacingAfter: number };
+    notifyActorCommitted(actor: PackagerUnit, boxes: Box[]): void;
     placeActorSequence(
         actors: readonly PackagerUnit[],
         state: {
@@ -365,6 +366,7 @@ export class TransitionsRuntime {
         positionMarker: SplitMarkerPositioner
     ): TailSplitFormationSettlementOutcome | TailSplitFailureSettlementOutcome {
         const { prefix, splitCandidate, replaceCount, splitMarkerReserve } = tailSplitExecution;
+        let prefixBoxes: Box[] = [];
         const transaction = this.host.executeSpeculativeBranch({
             reason: speculativeReason,
             pageBoxes: currentPageBoxes,
@@ -381,6 +383,7 @@ export class TransitionsRuntime {
                     availableWidth: state.availableWidth
                 }, contextBase);
                 currentPageBoxes.push(...placedPrefix.boxes);
+                prefixBoxes = placedPrefix.boxes;
 
                 const splitExecution = this.host.executePositionedSplitAttempt(
                     splitCandidate,
@@ -440,6 +443,11 @@ export class TransitionsRuntime {
         });
 
         if (transaction.accepted && transaction.value) {
+            // Publish only after the whole formation is accepted, and before
+            // settlement advances the page surface. Rejected probes stay silent.
+            for (const actor of prefix) {
+                this.host.notifyActorCommitted(actor, prefixBoxes.filter(box => box.meta?.actorId === actor.actorId));
+            }
             return this.settleTailSplitFormation(
                 pages,
                 currentPageBoxes,

@@ -445,6 +445,7 @@ export class LayoutSession {
             restoreLocalBranchSnapshot: (pageBoxes, actorQueue, snapshot) =>
                 this.fragmentSessionRuntime.restoreLocalBranchSnapshot(pageBoxes, actorQueue, snapshot),
             executeSpeculativeBranch: (input) => this.executeSpeculativeBranch(input),
+            notifyActorCommitted: (actor, boxes) => this.notifyActorCommitted(actor, boxes),
             placeActorSequence: (actors, state, contextBase) =>
                 this.fragmentSessionRuntime.placeActorSequence(actors, state, contextBase),
             executePositionedSplitAttempt: (actor, availableWidth, currentY, lastSpacingAfter, pageLimit, pageIndex, markerReserve, contextBase) =>

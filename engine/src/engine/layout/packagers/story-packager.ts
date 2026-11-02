@@ -1843,7 +1843,9 @@ export class StoryPackager implements PackagerUnit {
                 if (goNextRegion()) continue;
                 hasOverflow = true;
                 continuationElement = workingElement;
-                nextChildIndex = i;
+                // The pending element is already carried explicitly. Resume after
+                // its source child or the next fragment will pour it twice.
+                nextChildIndex = i + 1;
                 break outer;
             }
         }

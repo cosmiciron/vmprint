@@ -57,39 +57,43 @@ export class HeadingSignalCollaborator implements Collaborator {
         surface: PageSurface,
         host: CollaboratorHost
     ): void {
-        // Only emit for the first fragment — continuations don't change the heading's page position
-        if (actor.fragmentIndex > 0 || actor.continuationOf) return;
-        if (!committed.length) return;
-
-        const firstBox = committed.find((box) => box.meta?.generated !== true) ?? committed[0];
-        const sourceType = firstBox?.meta?.sourceType ?? actor.actorKind;
-        const semanticRole = firstBox?.meta?.semanticRole;
-        if (!isHeadingSignal(sourceType, semanticRole, actor.actorKind)) return;
-
-        const heading = committed.map(extractBoxText).join(' ').replace(/\s+/g, ' ').trim();
-        if (!heading) return;
-
-        const y = committed.reduce((best, box) => {
-            const v = Number.isFinite(box.y) ? Number(box.y) : Number.POSITIVE_INFINITY;
-            return Math.min(best, v);
-        }, Number.POSITIVE_INFINITY);
-
-        host.publishActorSignal({
-            topic: HEADING_SIGNAL_TOPIC,
-            publisherActorId: actor.actorId,
-            publisherSourceId: actor.sourceId,
-            publisherActorKind: typeof actor.actorKind === 'string' ? actor.actorKind : 'heading',
-            fragmentIndex: actor.fragmentIndex,
-            pageIndex: surface.pageIndex,
-            cursorY: Number.isFinite(y) ? y : 0,
-            signalKey: `heading:${actor.sourceId}`,
-            payload: {
-                heading,
-                level: resolveHeadingLevel(sourceType, semanticRole, actor.actorKind),
-                y: Number.isFinite(y) ? y : 0,
-                sourceType: typeof sourceType === 'string' ? sourceType : undefined,
-                semanticRole: typeof semanticRole === 'string' ? semanticRole : undefined
-            }
-        });
+        // Aggregate actors (stories, zones) flatten child boxes. Classify and group
+        // by each child's metadata rather than by the containing actor or first box.
+        const groups = new Map<string, Box[]>();
+        for (const box of committed) {
+            const meta = box.meta;
+            if (meta?.generated || meta?.isContinuation || Number(meta?.fragmentIndex ?? actor.fragmentIndex) > 0) continue;
+            const sourceType = meta?.sourceType ?? actor.actorKind;
+            if (!isHeadingSignal(sourceType, meta?.semanticRole, meta?.hostedSourceType ?? actor.actorKind)) continue;
+            const sourceId = meta?.sourceId ?? actor.sourceId;
+            const group = groups.get(sourceId) ?? [];
+            group.push(box);
+            groups.set(sourceId, group);
+        }
+        for (const [sourceId, boxes] of groups) {
+            const firstBox = boxes[0];
+            const sourceType = firstBox.meta?.sourceType ?? actor.actorKind;
+            const semanticRole = firstBox.meta?.semanticRole;
+            const heading = boxes.map(extractBoxText).join(' ').replace(/\s+/g, ' ').trim();
+            if (!heading) continue;
+            const y = Math.min(...boxes.map(box => Number.isFinite(box.y) ? Number(box.y) : 0));
+            host.publishActorSignal({
+                topic: HEADING_SIGNAL_TOPIC,
+                publisherActorId: actor.actorId,
+                publisherSourceId: sourceId,
+                publisherActorKind: String(sourceType),
+                fragmentIndex: 0,
+                pageIndex: surface.pageIndex,
+                cursorY: y,
+                signalKey: `heading:${sourceId}`,
+                payload: {
+                    heading,
+                    level: resolveHeadingLevel(sourceType, semanticRole, actor.actorKind),
+                    y,
+                    sourceType,
+                    semanticRole
+                }
+            });
+        }
     }
 }

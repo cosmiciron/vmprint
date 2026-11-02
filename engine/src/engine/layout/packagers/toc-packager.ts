@@ -1,7 +1,7 @@
 import type { Box, Element } from '../../types';
 import type { LayoutProcessor } from '../layout-core';
 import type { FlowBox } from '../layout-core-types';
-import { createContinuationIdentity, type PackagerIdentity } from './packager-identity';
+import type { PackagerIdentity } from './packager-identity';
 import { FlowBoxPackager } from './flow-box-packager';
 import { HEADING_SIGNAL_TOPIC } from '../runtime/signals/heading-signal-publisher';
 import { resolvePackagerWorldYAtCursor } from './packager-types';
@@ -14,14 +14,9 @@ import type {
     PackagerUnit
 } from './packager-types';
 
-const ENTRY_HEIGHT = 20;  // px per TOC entry line
-const TITLE_HEIGHT = 28;  // px for the TOC title line
-const PADDING = 16;        // top + bottom internal padding
-
 type TocEntry = {
     heading: string;
     pageIndex: number;
-    cursorY?: number;
     level: number | undefined;
 };
 
@@ -51,28 +46,6 @@ function formatEntry(entry: TocEntry): string {
     const page = entry.pageIndex + 1;
     const indent = entry.level && entry.level > 1 ? '  '.repeat(entry.level - 1) : '';
     return `${indent}${entry.heading}  ${page}`;
-}
-
-function compareTocEntries(a: TocEntry, b: TocEntry): number {
-    if (a.pageIndex !== b.pageIndex) {
-        return a.pageIndex - b.pageIndex;
-    }
-    const aCursorY = Number.isFinite(a.cursorY) ? Number(a.cursorY) : Number.POSITIVE_INFINITY;
-    const bCursorY = Number.isFinite(b.cursorY) ? Number(b.cursorY) : Number.POSITIVE_INFINITY;
-    if (aCursorY !== bCursorY) {
-        return aCursorY - bCursorY;
-    }
-    const aLevel = Number.isFinite(a.level) ? Number(a.level) : Number.POSITIVE_INFINITY;
-    const bLevel = Number.isFinite(b.level) ? Number(b.level) : Number.POSITIVE_INFINITY;
-    if (aLevel !== bLevel) {
-        return aLevel - bLevel;
-    }
-    return a.heading.localeCompare(b.heading);
-}
-
-function resolvedHeight(entryCount: number, isContinuation: boolean): number {
-    if (isContinuation) return entryCount * ENTRY_HEIGHT + PADDING;
-    return TITLE_HEIGHT + entryCount * ENTRY_HEIGHT + PADDING;
 }
 
 function isEarlierCommittedPosition(
@@ -105,7 +78,7 @@ function isEarlierCommittedPosition(
  * A live in-flow Table of Contents actor.
  *
  * Subscribes to committed heading signals via observeCommittedState().
- * Grows its geometry as headings are discovered during layout.
+ * Settles its geometry from the complete committed heading set at pagination boundaries.
  * Triggers downstream resettlement when its footprint changes.
  *
  * Place this packager near the front of the document as `type: 'toc'`.
@@ -115,7 +88,6 @@ export class TocPackager implements PackagerUnit {
     private base: FlowBoxPackager | null = null;
     private renderedFlowBox: FlowBox | null = null;
     private observationSignature: string | null = null;
-    private geometrySignature: string | null = null;
     private firstCommittedPageIndex: number | null = null;
     private firstCommittedActorIndex: number | null = null;
     private firstCommittedCursorY: number | null = null;
@@ -187,12 +159,9 @@ export class TocPackager implements PackagerUnit {
 
     reshape(availableHeight: number, context: PackagerContext): PackagerReshapeResult {
         const packager = this.base ?? this.buildPackager(context);
-        const result = packager.reshape(availableHeight, context);
-        if (!result.continuationFragment) return result;
-
-        const continuationIdentity = createContinuationIdentity(this.identity);
-        const continuationFragment = new TocPackager(this.processor, this.flowBox, continuationIdentity);
-        return { ...result, continuationFragment };
+        // The base split owns the remaining shaped lines. Keep those fragments intact;
+        // rebuilding from the authored TOC here would restart the entire contents.
+        return packager.reshape(availableHeight, context);
     }
 
     getRequiredHeight(): number { return this.base?.getRequiredHeight() ?? 0; }
@@ -201,7 +170,10 @@ export class TocPackager implements PackagerUnit {
     getTrailingSpacing(): number { return this.base?.getTrailingSpacing() ?? (this.flowBox.marginBottom ?? 0); }
 
     getCommittedSignalSubscriptions(): readonly string[] {
-        return [HEADING_SIGNAL_TOPIC];
+        // Heading discovery must finish before its geometry feeds back into the
+        // document. Settling after each heading makes the cycle budget depend on
+        // book length and replays partially updated page references repeatedly.
+        return ['pagination:finalized'];
     }
 
     updateCommittedState(context: PackagerContext): ObservationResult {
@@ -217,21 +189,19 @@ export class TocPackager implements PackagerUnit {
         const tocProps = this.getTocProperties();
         const title = tocProps.title;
         const content = buildTocContent(title, entries, isContinuation);
-        const height = resolvedHeight(entries.length, isContinuation);
 
         const nextObservationSig = JSON.stringify({ content });
-        const nextGeometrySig = JSON.stringify({ height });
-
+        // Page-reference edits can change wrapping, and a split TOC must be rebuilt
+        // from its first fragment. Treat the full rendered text as layout input.
         const changed = this.observationSignature !== nextObservationSig;
-        const geometryChanged = this.geometrySignature !== nextGeometrySig;
+        const geometryChanged = changed;
 
         this.observationSignature = nextObservationSig;
-        this.geometrySignature = nextGeometrySig;
 
         return {
             changed,
             geometryChanged,
-            updateKind: geometryChanged ? 'geometry' : (changed ? 'content-only' : 'none'),
+            updateKind: changed ? 'geometry' : 'none',
             earliestAffectedFrontier: geometryChanged
                 && this.firstCommittedPageIndex !== null
                 ? {
@@ -254,17 +224,17 @@ export class TocPackager implements PackagerUnit {
         const tocProps = this.getTocProperties();
         const levelFilter = tocProps.levelFilter;
         const signals = context.readActorSignals(HEADING_SIGNAL_TOPIC);
-        return signals
+        // The bus preserves first publication order when a keyed heading moves.
+        // Sorting by page/y would interleave the columns of a story.
+        return [...signals].sort((a, b) => a.sequence - b.sequence)
             .map((signal) => ({
                 heading: String(signal.payload?.heading ?? ''),
                 pageIndex: Number.isFinite(signal.pageIndex) ? Number(signal.pageIndex) : Number.POSITIVE_INFINITY,
-                cursorY: Number.isFinite(signal.cursorY) ? Number(signal.cursorY) : undefined,
                 level: signal.payload?.level != null ? Number(signal.payload.level) : undefined
             }))
             .filter((e) => e.heading.length > 0)
             .filter((e) => Number.isFinite(e.pageIndex))
-            .filter((e) => !levelFilter || levelFilter.length === 0 || (e.level != null && levelFilter.includes(e.level)))
-            .sort(compareTocEntries);
+            .filter((e) => !levelFilter || levelFilter.length === 0 || (e.level != null && levelFilter.includes(e.level)));
     }
 
     private getTocProperties(): TocProperties {
@@ -277,10 +247,8 @@ export class TocPackager implements PackagerUnit {
         const tocProps = this.getTocProperties();
         const title = tocProps.title;
         const content = buildTocContent(title, entries, isContinuation);
-        const height = resolvedHeight(entries.length, isContinuation);
 
         this.observationSignature = JSON.stringify({ content });
-        this.geometrySignature = JSON.stringify({ height });
 
         const sourceElement = (this.flowBox._sourceElement || this.flowBox._unresolvedElement || {
             type: 'toc',
@@ -295,8 +263,8 @@ export class TocPackager implements PackagerUnit {
                 ...(sourceElement.properties ?? {}),
                 sourceId: this.sourceId,
                 style: {
-                    ...((tocProps.style as Record<string, unknown>) ?? {}),
-                    ...(height > 0 ? { height } : {})
+                    allowLineSplit: true,
+                    ...((tocProps.style as Record<string, unknown>) ?? {})
                 }
             }
         };
