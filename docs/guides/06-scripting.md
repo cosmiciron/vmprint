@@ -208,8 +208,12 @@ methods:
 ---
 ```
 
-The `toc` element starts empty. After the document settles, it receives the
-real heading list and appends an entry for each one.
+The custom element named `toc` starts empty. After the document settles, it
+receives the heading list and appends an entry for each one. This illustrates
+script messaging and does not calculate page references. For a native table of
+contents with final page numbers, use `type: "toc"` as shown in the
+[native book example](../examples/native-toc/README.md); it populates itself
+without scripting.
 
 ---
 

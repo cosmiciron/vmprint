@@ -40,6 +40,15 @@ const firstTwoPages = await engine.layout({ stopAtPage: 1 });
 
 `VMPrintEngine` is the preferred API going forward, but it is not a hard break with the past. The older low-level bootstrap path built around `LayoutEngine`, `Renderer`, `createPrintEngineRuntime`, and `toLayoutConfig` is still supported for advanced integrations that want finer control over layout and rendering stages.
 
+## Native table of contents
+
+For a book with chapter and section headings, including two-column stories,
+use a native `toc` element and one complete `await engine.layout()` call.
+The [runnable book example](../docs/examples/native-toc/README.md) includes JSON,
+Node.js integration, multi-page contents, and Gavin's original regression input.
+It requires the native TOC repair in `c9b928e` or a descendant; use a source build
+containing that commit until a release includes it.
+
 ## What the engine owns
 
 - Document validation and normalization via `loadDocument`

@@ -44,6 +44,15 @@ Detailed specifications for the document format and runtime APIs:
 
 ---
 
+## Node.js Book Example
+
+[Native table of contents](./examples/native-toc/README.md): a runnable JSON book
+with chapter and section headings inside two-column stories, wrapped titles,
+and multi-page contents. Includes `VMPrintEngine` usage and the original
+20-heading reproduction. Requires a source build containing repair `c9b928e`.
+
+---
+
 ## Live Examples
 
 Each example is a complete VMPrint pipeline running entirely client-side - no backend, no server, no headless browser. Download the folder, open `index.html`, and it works immediately from `file://`.

@@ -8,9 +8,10 @@ import type { PackagerUnit } from '../src/engine/layout/packagers/packager-types
 import { loadLocalFontManager, snapshotPages } from './harness/engine-harness';
 
 const small = JSON.parse(fs.readFileSync(new URL('./fixtures/regression/24-toc-live-reactive.json', import.meta.url), 'utf8'));
-// The ticket supplies the reduced case structure, but not Gavin's original JSON.
-// Keep a fixed reconstruction rather than relying only on generated cases.
+// Keep the original synthetic stress case alongside Gavin's pinned reproduction.
 const reported = JSON.parse(fs.readFileSync(new URL('./fixtures/native-toc/20-root-headings.json', import.meta.url), 'utf8'));
+const gavin = JSON.parse(fs.readFileSync(new URL('./fixtures/native-toc/gavin-20-root-headings.json', import.meta.url), 'utf8'));
+const book = JSON.parse(fs.readFileSync(new URL('../../docs/examples/native-toc/book.json', import.meta.url), 'utf8'));
 let FontManager: any;
 function document(count: number, story?: 'paragraph' | 'heading', wrapped = false): any {
     const doc = structuredClone(reported);
@@ -69,6 +70,34 @@ async function runCase(mode: string, count: number) {
     }
     assert.deepEqual(snapshotPages(await layout(doc)), snapshotPages(pages));
     console.log(`PASS native TOC ${mode}: ${count} headings, ${pages.length} pages, ${toc.length} TOC fragments`);
+}
+
+async function checkAuthoredDocument(doc: any, name: string, multiPageToc = false) {
+    const headings: any[] = [];
+    const visit = (elements: any[]) => {
+        for (const element of elements) {
+            if (/^h[1-6]$/.test(element.type)) headings.push(element);
+            if (element.children) visit(element.children);
+        }
+    };
+    visit(doc.elements);
+    const pages = await layout(doc);
+    const contents = pages.flatMap(page => page.boxes.filter(box => box.type === 'toc')).map(text).join(' ').replace(/\s+/g, ' ').trim();
+    const expected = ['Contents'];
+    for (const heading of headings) {
+        const id = heading.properties.sourceId;
+        const headingPage = pages.findIndex(page => page.boxes.some(box => box.meta?.sourceId === `author:${id}` && text(box).trim()));
+        assert.ok(headingPage >= 0, `${name}: rendered heading ${id}`);
+        expected.push(`${heading.content} ${headingPage + 1}`);
+    }
+    assert.equal(contents, expected.join(' '), `${name}: every heading once, in order, with its final page`);
+    if (multiPageToc) {
+        const tocBoxes = pages.flatMap(page => page.boxes.filter(box => box.type === 'toc'));
+        assert.ok(pages.filter(page => page.boxes.some(box => box.type === 'toc')).length >= 2, `${name}: multiple contents pages`);
+        assert.ok(tocBoxes.reduce((sum, box) => sum + (box.lines?.length ?? 0), 0) > headings.length + 1, `${name}: wrapped contents title`);
+    }
+    assert.deepEqual(snapshotPages(await layout(doc)), snapshotPages(pages), `${name}: deterministic output`);
+    console.log(`PASS ${name}: ${headings.length} entries, ${pages.length} pages`);
 }
 
 function checkGroupedPublication() {
@@ -135,6 +164,8 @@ function checkGroupedPublication() {
 async function main() {
     FontManager = await loadLocalFontManager();
     checkGroupedPublication();
+    await checkAuthoredDocument(gavin, 'Gavin pinned original');
+    await checkAuthoredDocument(book, 'Native TOC book example', true);
     if (process.argv[2]) return runCase(process.argv[2], Number(process.argv[3] ?? 20));
     for (const count of [1, 20, 80, 200]) await runCase('root', count);
     await runCase('paragraph', 20);
